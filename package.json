@@ -1,0 +1,27 @@
+{
+  "name": "zawody-konne",
+  "version": "0.0.0",
+  "description": "zawody koniow arabskich",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "ejs": "^1.0.0",
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.1",
+    "cookie-session": "^1.0.2",
+    "errorhandler": "^1.2.2",
+    "mongoose": "*",
+    "async": "*",
+    "morgan": "^1.4.1",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "socketio": "^1.0.0",
+    "passport.socketio": "^3.6.1"
+  }
+}
