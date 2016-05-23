@@ -1,5 +1,5 @@
 /*jshint node: true */
-module.exports = function () {
+exports.index = function () {
     // „next” poniżej oznacza kolejną wartswę – tutaj akurat jej nie
     // wykorzystujemy i moglibyśmy pominąć ją w liście parametrów
     return function (req, res, next) {
