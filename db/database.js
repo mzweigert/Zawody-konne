@@ -28,7 +28,7 @@ var competitionSchema = mongoose.Schema({
     
 });
 
-mongoose.connect('mongodb://localhost/social', () => {
+mongoose.connect('mongodb://localhost/horse-competition', () => {
   console.log('Nazwiązano połączenie z mongodb.');
 });
 

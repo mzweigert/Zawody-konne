@@ -6,19 +6,20 @@ var express = require("express"),
     router = express.Router();
 
 router.post('/addHorse', (req, res) => {
-    
+
     if(req.body.name === undefined || 
        req.body.gender === undefined || 
        req.body.breeder === undefined){
         
         res.sendStatus(400);
     }
-    let horse = new db.Horse(
-            {
-                name: req.body.name,
-                gender: req.body.gender,
-                breeder: req.body.breeder
-            });
+    let horse = new db.Horse({
+        
+        name: req.body.name,
+        gender: req.body.gender,
+        breeder: req.body.breeder
+    });
+    
     horse.save((err) => {
       
         if(err)
