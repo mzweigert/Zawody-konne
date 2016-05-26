@@ -8,6 +8,12 @@ var express = require('express'),
     router = express.Router();
 
 
+router.get('/', (req, res) => {
+    res.header('Content-Type', 'text/html; charset=utf-8');
+    res.render('index', {
+       title: 'Zawody konne'
+    });
+});
 router.use('/admin', admin);
 router.use('/arbiter', arbiter.index);
 router.use('/waist', waist.index);

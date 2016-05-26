@@ -32,16 +32,11 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static('public'));
-app.post('/login',
-    (passport.authenticate('local', {
-        failureRedirect: '/login'
-    }),
-    function (req, res) {
-        res.send('/authorized.html');
-    })
-);
-app.use('/api', require('./routes'));
+
+app.use('/', require('./routes'));
+
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 

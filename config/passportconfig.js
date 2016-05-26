@@ -1,4 +1,5 @@
-var passport = require('passport');
+var passport = require('passport'),
+    db = require('../db/database.js');
 
 var LocalStrategy = require('passport-local').Strategy;
 // Konfiguracja passport.js
@@ -12,17 +13,27 @@ passport.deserializeUser(function (obj, done) {
 
 passport.use(new LocalStrategy(
     function (username, password, done) {
-        if ((username === 'admin') && (password === 'tajne')) {
-            console.log("Udane logowanie...");
-            return done(null, {
-                username: username,
-                password: password
-            });
-        } else {
-            return done(null, false);
-        }
+        
+        db.User.findOne({ 'username' : username }, (err, found) => {
+            if (err)
+                return done(err);
+            if(!user){
+                console.log('User not found with username ' + username);
+                return done(null, false, 
+                           req.flash('message', 'User not found.'));
+            }
+            
+            if(!isValidPassword(user, password)) {
+                console.log('Invalid Password');
+                return done(null, false, req.flash('message', 'invalid password'));
+            }
+        });
+        return done(null, user);
     }
 ));
 
+var isValidPassword = function(user, password){
+  return bCrypt.compareSync(password, user.password);
+}
 
 module.exports = passport;
