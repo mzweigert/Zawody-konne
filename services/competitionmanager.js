@@ -25,7 +25,7 @@ router.post('/addCompetition', (req, res) => {
                 meta: req.body.meta,
                 group: req.body.group
             });
-    arbiter.save((err) => {
+    competition.save((err) => {
       
         if(err)
             res.status(400).json(err);

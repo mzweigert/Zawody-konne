@@ -1,0 +1,45 @@
+// out: ../../public/css/login.css, compress: true
+.margin(@top, @left, @right, @bottom, @width)
+{
+    margin-top: @top;
+    margin-left: @left;
+    margin-right: @right;
+    margin-bottom: @bottom;
+    width: @width;
+}
+.jumbotron{
+    
+    .glyphicon {
+        position:absolute;
+        right: 20px;
+        top: 20px;
+        
+        
+    }
+    .glyphicon:hover{
+        cursor: pointer;  
+    }
+    .glyphicon-circle-arrow-right{
+         font-size: 4em;
+    }
+}
+
+.login-form{
+    
+    .margin(10%, auto, auto, 0, 30%);
+
+
+    .form-group .form-control{
+        .margin(0, 10%, 10%, 5%, 80%);
+        float: none;
+      
+        display: inline;
+    }
+    .alert{
+        .margin(0, 10%, 10%, 5%, 80%);
+    }
+}
+
+.main-caption{
+    font-size: 40px;
+}

@@ -1,8 +1,10 @@
-/* jshint esnext: true */
+/* jshint node: true, esnext: true */
 'use strict';
 var http = require('http'),
     express = require('express'),
+    flash = require('express-flash'),
     app = express(),
+    
 
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
@@ -23,6 +25,7 @@ var http = require('http'),
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(flash());
 app.use(session({
     resave: true,
     saveUninitialized: true,

@@ -1,3 +1,5 @@
+/* jshint node: true, esnext: true */
+
 var mongoose = require('mongoose');
 
 

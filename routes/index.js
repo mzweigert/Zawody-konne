@@ -2,20 +2,32 @@
 // poniżej użylismy krótszej (niż na wykładzie) formy
 // module.exports ==> exports
 var express = require('express'),
+    db = require('../db/database.js'),
+    competition = require('./competition.js'),
+    login = require('./login.js'),
     admin   = require('./mw_admin.js'),
     arbiter = require('./mw_arbiter.js'),
-    waist   = require('./mw_waist.js'),
     router = express.Router();
 
 
 router.get('/', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
-    res.render('index', {
-       title: 'Zawody konne'
-    });
+     db.Competition.find({}, (err, competitions) => {
+        if(err)
+           return res.status(404);
+        
+        res.render('index', {
+            title: 'Zawody konne',
+            competitions: competitions
+            
+        });
+    }); 
+    
 });
+
+router.use('/competition', competition);
+router.use('/login', login);
 router.use('/admin', admin);
 router.use('/arbiter', arbiter.index);
-router.use('/waist', waist.index);
 
 module.exports = router;
