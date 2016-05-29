@@ -4,11 +4,11 @@ var mongoose = require('mongoose');
 
 
 var userSchema = mongoose.Schema({
-  firstname: { type: String, required: true },
-  lastname: { type: String, required: true },
-  username: { type: String, required: true },
-  password: { type: String, required: true, select: false },
-  role: { type: String, required: true, select: false },
+    firstname: { type: String, required: true },
+    lastname: { type: String, required: true },
+    username: { type: String, required: true },
+    password: { type: String, required: true, select: false },
+    role: { type: String, required: true, select: false },
 });
 
 
@@ -22,20 +22,22 @@ var competitionSchema = mongoose.Schema({
     meta: {
         name: { type: String, required: true },
         startDate: { type: Date, required: true },
-        arbittersCount: { type:Number, min: 5, required: true }
+        arbittersCount: { type:Number, min: 5, required: true },
+        ratesType: {type: String, required: true}
     },
     startList:{
-         horses: [{horse:{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}, startNumber: Number}],
-         groups: [{
-             name: { type: String, required: true },
-             gender: { type: String, required: true },
-
-             arbiters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-             results: [{type: mongoose.Schema.Types.ObjectId, ref: 'Result'}]
         
-         }]
+        referringHorses: [{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}],
+        groups: [{
+            name: { type: String, required: true },
+            gender: { type: String, required: true },
+            horses: [{horse:{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}, startNumber: Number}],
+            arbiters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+            results: [{type: mongoose.Schema.Types.ObjectId, ref: 'Result'}]
+
+        }]
     }
- 
+
 });
 
 var resultSchema = mongoose.Schema({
@@ -49,7 +51,7 @@ var resultSchema = mongoose.Schema({
 });
 
 mongoose.connect('mongodb://localhost/horse-competition', () => {
-  console.log('Nazwiązano połączenie z mongodb.');
+    console.log('Nazwiązano połączenie z mongodb.');
 });
 
 var User = mongoose.model('User', userSchema),

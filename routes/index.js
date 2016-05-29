@@ -12,6 +12,7 @@ var express = require('express'),
 
 router.get('/', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
+
      db.Competition.find({}, (err, competitions) => {
         if(err)
            return res.status(404);

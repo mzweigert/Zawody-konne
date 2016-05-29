@@ -2,12 +2,12 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title> Zawody </title>
+        <title> Uzytkownicy </title>
 
         <script src='../bower_components/jquery/dist/jquery.js'></script>
         <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="/js/utils.js"></script>
-        <script src="/js/horsecrud.js"></script>
+        <script src="/js/usercrud.js"></script>
         <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="/css/crud.css">
 
@@ -17,44 +17,57 @@
 
         <div class="jumbotron">
             <div class="container text-center">
-                <p>Konie</p>
+                <p>Użytkownicy</p>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Nazwa</th>
-                            <th>Płeć</th>
-                            <th>Hodowca</th>
+                            <th>Login</th>
+                            <th>Hash</th>
+                            <th>Imie</th>
+                            <th>Nazwisko</th>
+                            <th>Rola</th>
                             <th></th>
                             <th></th>
+
                         </tr>
                     </thead>
                     <tbody id="horses-tbody">
                         <tr>
                             <td class="text-center">
                                 <div class="input-group">
-                                    <button id="add-btn" type="submit" class="btn btn-success">Add</button>
+                                    <button id="add-btn" type="submit" class="btn btn-success">Dodaj</button>
                                 </div>
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <input id="name" type="text" class="form-control" placeholder="name">
+                                    <input id="username" type="text" class="form-control" placeholder="login">
                                 </div>
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <select class="form-control" id="gender">
-                                        <option>Klacz</option>
-                                        <option>Ogier</option>
+                                    <input id="password" type="password" class="form-control" placeholder="haslo">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input id="firstname" type="text" class="form-control" placeholder="imie">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input id="lastname" type="text" class="form-control" placeholder="nazwisko">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <select class="form-control" id="role">
+                                        <option>admin</option>
+                                        <option>arbiter</option>
                                     </select>
                                 </div>
                             </td>
 
-                            <td>
-                                <div class="input-group">
-                                    <input id="breeder" type="text" class="form-control" placeholder="breeder">
-                                </div>
-                            </td>
                             <td></td>
                             <td></td>
                         </tr>
@@ -72,13 +85,13 @@
                     <div class="modal-body">
                         <div class="input-group input-group-lg" id="inputs-update">
                             <input type="text" class="form-control" disabled>
-                            <input type="text" class="form-control" placeholder="name">
+                            <input type="text" class="form-control" placeholder="login">
+                            <input type="text" class="form-control" placeholder="imie">
+                            <input type="text" class="form-control" placeholder="nazwisko">
                             <select class="form-control">
-                                <option>Klacz</option>
-                                <option>Ogier</option>
+                                <option>admin</option>
+                                <option>arbiter</option>
                             </select>
-                            <input type="text" class="form-control" placeholder="breeder">
-
                         </div>
 
                         <div class="alert alert-danger fade" id='update-alert'></div>
@@ -105,18 +118,5 @@
                 </div>
             </div>
         </div>
-<!--
-        <div class="modal fade" id="info-modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                    <div id="info-modal-text" class="modal-body">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" id="OK">Ok</button>
-                    </div>
-                </div>
-            </div>
-        </div>
--->
     </body>
 </html>

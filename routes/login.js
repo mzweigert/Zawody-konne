@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
     res.render('login');
 });
-router.post('/',(req, res) => {
+router.post('/', (req, res) => {
     passport.authenticate('login', (err, user, info) => {
         if (err) { 
             return res.send(info).status(400); 

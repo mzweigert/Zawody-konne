@@ -21,19 +21,15 @@ passport.use('login', new LocalStrategy({
 
 
         db.User.findOne({ 'username' : username }, 'username password role', (err, user) => {
-
             if (err)
                 return done(err);
             if(!user){
-          
                 return done(null, false, { message: 'Nie znaleziono użytkownika o loginie: ' + username });
             }
             
             if(!isValidPassword(user, password)) {
-
                 return done(null, false, { message: 'Nieprawidłowe hasło.' } );
             }
-            
             return done(null, user);
         });
         
