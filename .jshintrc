@@ -1,0 +1,9 @@
+{
+  "globals": {
+      "createRow": true,
+      "updateRow": true,
+      "makeRowsInTable": true,
+      "console": true,
+      "window": true
+  }
+}

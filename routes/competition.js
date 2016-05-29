@@ -12,13 +12,13 @@ router.get('/:id',  (req, res) => {
     }
     db.Competition.findById(req.param('id'), (err, found) => {
        
-   
+        console.log(found);
         if(err)
             res.status(404).json(err);
         else
             res.render('competition', {
                 title: found.meta.name,
-                competition: found
+                group: found.group
 
             });
 

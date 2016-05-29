@@ -17,7 +17,7 @@ $(() => {
             contentType: "application/json"
                
         }).success((res) => {
-            console.log(res);
+            window.location = res;
         }).error((err) => {
             
             $alert.addClass('in');

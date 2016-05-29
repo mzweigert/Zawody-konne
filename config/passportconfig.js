@@ -11,7 +11,7 @@ passport.serializeUser(function(user, done) {
 });
  
 passport.deserializeUser(function(id, done) {
-    db.User.findById(id, function(err, user) {
+    db.User.findById(id, 'role firstname lastname', (err, user) => {
         done(err, user);
     });
 });
@@ -20,7 +20,7 @@ passport.use('login', new LocalStrategy({
     }, (req, username, password, done) => {
 
 
-        db.User.findOne({ 'username' : username }, 'username password', (err, user) => {
+        db.User.findOne({ 'username' : username }, 'username password role', (err, user) => {
 
             if (err)
                 return done(err);
@@ -39,7 +39,7 @@ passport.use('login', new LocalStrategy({
         
     }
 ));
-/*
+
 passport.use('signup', new LocalStrategy({
     passReqToCallback : true
   },
@@ -63,9 +63,12 @@ passport.use('signup', new LocalStrategy({
           // create the user
           var newUser = new db.User();
           // set the user's local credentials
+            console.log(req.body.lastname);
           newUser.username = username;
           newUser.password = createHash(password);
-
+          newUser.firstname = req.body.firstname;
+          newUser.lastname = req.body.lastname;
+          newUser.role = req.body.role;
           // save the user
           newUser.save(function(err) {
             if (err){
@@ -83,7 +86,7 @@ passport.use('signup', new LocalStrategy({
     // the method in the next tick of the event loop
     process.nextTick(findOrCreateUser);
   }));
-*/
+
 var isValidPassword = function(user, password){
 
     return bCrypt.compareSync(password, user.password);

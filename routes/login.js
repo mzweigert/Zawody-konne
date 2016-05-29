@@ -12,32 +12,29 @@ router.get('/', (req, res) => {
 router.post('/',(req, res) => {
     passport.authenticate('login', (err, user, info) => {
         if (err) { 
- 
             return res.send(info).status(400); 
         }
         if (!user) { 
-      
             return res.status(401).send(info.message); 
         }
         req.logIn(user, (err) => {
-      
             if (err) { 
                 return res.status(401).send(err); 
             }
-            return res.send(user);
+            
+            req.user.role = user.role;
+            if(user.role === 'admin')
+                res.send('../admin');
+            else if(user.role === 'arbiter')
+                res.send('../arbiter');
         });
     })(req, res);
 
 });
 
-router.post('/signup', (req, res) => { 
-
-    /*passport.authenticate('signup', {
-    successRedirect: '/home',
-    failureRedirect: '/signup',
+router.post('/signup', passport.authenticate('signup', {
     failureFlash : true 
-    });*/
-});
+}));
 
 
 module.exports = router;

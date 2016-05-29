@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> Zawody </title>
+
+        <script src='../bower_components/jquery/dist/jquery.js'></script>
+        <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/horsecrud.js"></script>
+        <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/crud.css">
+
+
+    </head>
+    <body>
+
+        <div class="jumbotron">
+            <div class="container text-center">
+                <p>Konie</p>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nazwa</th>
+                            <th>Płeć</th>
+                            <th>Hodowca</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="horses-tbody">
+                        <tr>
+                            <td class="text-center">
+                                <div class="input-group">
+                                    <button id="add-btn" type="submit" class="btn btn-success">Add</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input id="name" type="text" class="form-control" placeholder="name">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <select class="form-control" id="gender">
+                                        <option>Klacz</option>
+                                        <option>Ogier</option>
+                                    </select>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="input-group">
+                                    <input id="breeder" type="text" class="form-control" placeholder="breeder">
+                                </div>
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-danger fade" id='add-alert'>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="update-modal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="input-group input-group-lg" id="inputs-update">
+                            <input type="text" class="form-control" disabled>
+                            <input type="text" class="form-control" placeholder="name">
+                            <select class="form-control" id="gender">
+                                <option>Klacz</option>
+                                <option>Ogier</option>
+                            </select>
+                            <input type="text" class="form-control" placeholder="breeder">
+
+                        </div>
+
+                        <div class="alert alert-danger fade" id='update-alert'></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="update-btn" class="btn btn-success">Update</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="delete-modal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p>Napewno chcesz usunąć ten rekord?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="delete-btn" class="btn btn-danger" data-dismiss="modal">Usuń</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Anuluj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="info-modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div id="info-modal-text" class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal" id="OK">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+</html>

@@ -19,17 +19,22 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Miejsce</th>
-                                <th>Numer Startowy</th>
-
+                                <th>Nazwa grupy</th>
+                                <th>Płeć</th>
+                                <th>Sędziowie</th>
+                                <th>Numery startowe koni</th>
+                                <th>Wyniki</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">
-                            <% competition.group.horses.forEach((elem, i) => {%>
+                            <% group.forEach((elem, i) => {%>
                             <tr>
-                                <td><%= i %></td>
-                                <td><a href="/competition/<%= elem._id %>"><%= elem.startNumber %></a></td>
-               
+                                <td><%= elem.name %></td>
+                                <td><%= elem.gender %></td>
+                                <td> <% elem.arbiters.forEach((elem, i) => { elem.startNumber } %></td>
+                                <td><%= elem.horses.forEach((elem, i) => { elem.startNumber } %></td>
+                                <td><%= elem.name %></td>
+                                
                             </tr>
                             <% }); %>
                         </tbody>
