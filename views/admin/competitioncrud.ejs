@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> Zawody </title>
+        <script src='/bower_components/jquery/dist/jquery.js'></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/bower_components/moment/min/moment.min.js"></script>
+        <script src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/competitioncrud.js"></script>
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+        <link rel="stylesheet" href="/css/crud.css">
+    </head>
+    <body>
+
+        <div class="jumbotron">
+            <div class="container text-center">
+                <p>Konie</p>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nazwa</th>
+                            <th>Data rozpoczęcia</th>
+                            <th>Liczba sędziów</th>
+                            <th>Typ oceniania</th>
+                            <th>Lista startowa</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="competitions-tbody">
+                        <tr>
+                            <td class="text-center">
+                                <div class="input-group">
+                                    <button id="add-btn" type="submit" class="btn btn-success">Dodaj</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input id="name" type="text" class="form-control" placeholder="nazwa">
+                                </div>
+                            </td>
+                            <td class="td-date">
+                                <div class="input-group">
+                                    <input id="start-date" type="text" class="form-control form-date" placeholder="data rozpoczecia">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input id="arbiters-count" type="number" min="5" class="form-control" placeholder="liczba sedziow">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <select class="form-control" id="rates-type">
+                                        <option value="half">połówki</option>
+                                        <option value="all">całe</option>
+                                    </select>
+                                    <select class="form-control" id="rates-interval">
+                                        <option value="half">0-10</option>
+                                        <option value="all">0-20</option>
+                                    </select>
+                                </div>
+                            </td>
+
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-danger fade" id='add-alert'>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="update-modal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="input-group input-group-lg" id="inputs-update">
+                            <input type="text" class="form-control" disabled>
+                            <input type="text" class="form-control" placeholder="nazwa">
+                            <input type="text" class="form-control" placeholder="data rozpoczecia">
+                            <input type="number" min="5" class="form-control" placeholder="liczba sedziow">
+                            <select class="form-control">
+                                <option value="half">połówki</option>
+                                <option value="all">całe</option>
+                            </select>
+                            <select class="form-control">
+                                <option value="ten">0-10</option>
+                                <option value="twenty">0-20</option>
+                            </select>
+                        </div>
+
+                        <div class="alert alert-danger fade" id='update-alert'></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="update-btn" class="btn btn-success">Update</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="delete-modal" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p>Napewno chcesz usunąć ten rekord?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="delete-btn" class="btn btn-danger" data-dismiss="modal">Usuń</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Anuluj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

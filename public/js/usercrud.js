@@ -12,10 +12,10 @@ $(()=>{
         deleteRow,
         $updateAlert = $('#update-alert'),
         $inputsUpdate = $('#inputs-update').children(),
-        $tbody = $('#horses-tbody'),
+        $tbody = $('#users-tbody'),
         $this;
 
-    $.get('./getAllUsers', (response) => {
+    $.get('./user/getAllUsers', (response) => {
         let userArr = [];
         response.forEach((elem) => {
             let obj = {
@@ -41,24 +41,20 @@ $(()=>{
         $addAlert.removeClass('in');
         $addAlert.text('');
         idUser = deleteRow.children(0).eq(0).text();
+        
+        $.ajax({
+            url: './user/deleteUser',
+            data: JSON.stringify({ id: idUser }),
+            type: 'DELETE', 
+            dataType: 'JSON', 
+            contentType: 'application/json',
 
-        if(typeof null != idUser && typeof 'undefined' != idUser ){
-
-            $.ajax({
-                url: './deleteUser',
-                data: JSON.stringify({ id: idUser }),
-                type: 'DELETE', 
-                dataType: 'JSON', 
-                contentType: 'application/json',
-
-            }).success((res) => {
-                deleteRow.remove();
-            }).error((err) => {
-                $addAlert.addClass('in');
-                $addAlert.text(err.responseText);
-            });
-
-        }
+        }).success((res) => {
+            deleteRow.remove();
+        }).error((err) => {
+            $addAlert.addClass('in');
+            $addAlert.text(err.responseText);
+        });
     });
     $tbody.on('click', '.update-row', (e) => {
 
@@ -92,66 +88,36 @@ $(()=>{
             newLastname = $inputsUpdate.eq(3).val(),
             newRole = $inputsUpdate.eq(4).val();
 
+        $.ajax({
+            url: './user/updateUser',
+            type: 'PUT',
+            dataType: 'JSON', 
+            contentType: 'application/json',
+            data:  JSON.stringify({
+                id: idUser,
+                username: newUsername,
+                firstname: newFirstname,
+                lastname: newLastname,
+                role: newRole
+            })
 
-        console.log(newRole);
-        if(idUser === '' || typeof idUser === 'undefined' || idUser !== newIdUser){
+        }).success((res) => {
             $('#update-modal').modal('hide');
 
-        }
-        else if(newUsername === username &&
-                newFirstname === firstname &&
-                newLastname === lastname &&
-                newRole === role) {
+            let obj = {
+                id: res._id,
+                username: res.username,
+                password: res.password,
+                firstname: res.firstname,
+                lastname: res.lastname,
+                role: res.role
+            };
+            updateRow(obj, $this.parent());
 
-            $('#update-modal').modal('hide');
-        }
-        else if(newUsername.length < 2 || newUsername.length > 10){
-
-            $updateAlert.text('Username musi miec minimum 5 i maksimum 10 znakow');
+        }).error((err) => { 
+            $updateAlert.text(err.responseText);
             $updateAlert.addClass('in');
-        }
-        else if(newFirstname.length < 2 || newFirstname.length > 30 || newLastname.length < 2 || newLastname.length > 30){
-            $updateAlert.text('Imie i nazwisko musi miec minimum 2 znaki i maksium 30 znakow!');
-            $updateAlert.addClass('in');
-        }
-        else if( newRole !== 'admin' && newRole !== 'arbiter') {
-
-            $updateAlert.text('Nieprawidlowa rola!');
-            $updateAlert.addClass('in');
-        }
-        else {
-
-            $.ajax({
-                url: './updateUser',
-                type: 'PUT',
-                dataType: 'JSON', 
-                contentType: 'application/json',
-                data:  JSON.stringify({
-                    id: idUser,
-                    username: newUsername,
-                    firstname: newFirstname,
-                    lastname: newLastname,
-                    role: newRole
-                })
-
-            }).success((res) => {
-                $('#update-modal').modal('hide');
-
-                let obj = {
-                    id: res._id,
-                    username: res.username,
-                    password: res.password,
-                    firstname: res.firstname,
-                    lastname: res.lastname,
-                    role: res.role
-                };
-                updateRow(obj, $this.parent());
-
-            }).error((err) => { 
-                $updateAlert.text(err.responseText);
-                $updateAlert.addClass('in');
-            });
-        }
+        });
 
     });
     $('#add-btn').click(() => {
@@ -166,60 +132,36 @@ $(()=>{
         lastname = $('#lastname').val();
         role = $('#role').val();
 
+        $.ajax({
+            url: './user/addUser',
+            type: 'Post',
+            dataType: 'JSON', 
+            contentType: 'application/json',
+            data:  JSON.stringify({
+                id: idUser,
+                username: username,
+                password: password,
+                firstname: firstname,
+                lastname: lastname,
+                role: role
+            })
 
+        }).success((res) => {
+            let obj = {
+                id: res._id,
+                username: res.username,
+                password: res.password,
+                firstname: res.firstname,
+                lastname: res.lastname,
+                role: res.role
+            };
 
-        if(username.length < 2 || username.length > 10){
+            createRow(obj, $tbody);
 
-            $addAlert.text('Login musi miec minimum 5 i maksimum 10 znakow');
+        }).error((err) => { 
+            $addAlert.text(err.responseText);
             $addAlert.addClass('in');
-            console.log(username, password, firstname, lastname, role);
-        }
-        else if(password.length < 6 || password.length > 15){
-            $addAlert.text('Hasło musi miec minimum 6 znakow i maksimum 15 znaków!');
-            $addAlert.addClass('in');
-        }
-        else if(firstname.length < 2 || firstname.length > 30 || lastname.length < 2 || lastname.length > 30){
-            $addAlert.text('Imie i nazwisko musi miec minimum 2 znaki i maksium 30 znakow!');
-            $addAlert.addClass('in');
-        }
-        else if( role !== 'admin' && role !== 'arbiter') {
-
-            $addAlert.text('Nieprawidlowa rola!');
-            $addAlert.addClass('in');
-        }
-        else {
-            $.ajax({
-                url: './addUser',
-                type: 'Post',
-                dataType: 'JSON', 
-                contentType: 'application/json',
-                data:  JSON.stringify({
-                    id: idUser,
-                    username: username,
-                    password: password,
-                    firstname: firstname,
-                    lastname: lastname,
-                    role: role
-                })
-
-            }).success((res) => {
-                let obj = {
-                    id: res._id,
-                    username: res.username,
-                    password: res.password,
-                    firstname: res.firstname,
-                    lastname: res.lastname,
-                    role: res.role
-                };
-
-                createRow(obj, $tbody);
-
-            }).error((err) => { 
-                $addAlert.text(err.responseText);
-                $addAlert.addClass('in');
-            });
-
-        }
+        });
     });
 
 });

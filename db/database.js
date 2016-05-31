@@ -22,7 +22,7 @@ var competitionSchema = mongoose.Schema({
     meta: {
         name: { type: String, required: true },
         startDate: { type: Date, required: true },
-        arbittersCount: { type:Number, min: 5, required: true },
+        arbitersCount: { type:Number, min: 5, required: true },
         ratesType: {type: String, required: true}
     },
     startList:{

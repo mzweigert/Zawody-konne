@@ -35,8 +35,14 @@ router.get('/user', checkRole('admin'), (req, res) => {
     res.render('admin/usercrud');
 });
 
-router.use('/', checkRole('admin'), horseManager );
-router.use('/', checkRole('admin'), userManager );
-router.use('/', checkRole('admin'), competitionManager );
+router.get('/competition', checkRole('admin'), (req, res) => {
+    res.header('Content-Type', 'text/html; charset=utf-8');
+    res.render('admin/competitioncrud');
+});
+
+
+router.use('/horse', checkRole('admin'), horseManager );
+router.use('/user', checkRole('admin'), userManager );
+router.use('/competition', checkRole('admin'), competitionManager );
 
 module.exports = router;

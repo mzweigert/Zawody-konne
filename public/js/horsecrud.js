@@ -13,7 +13,7 @@ $(()=>{
         $tbody = $('#horses-tbody'),
         $this;
 
-    $.get('./getAllHorses', (response) => {
+    $.get('./horse/getAllHorses', (response) => {
         makeRowsInTable(response, $tbody);
     });
 
@@ -28,7 +28,7 @@ $(()=>{
         if(typeof null != idHorse && typeof 'undefined' != idHorse ){
 
             $.ajax({
-                url: './deleteHorse',
+                url: './horse/deleteHorse',
                 data: JSON.stringify({ id: idHorse }),
                 type: 'DELETE', 
                 dataType: 'JSON', 
@@ -70,45 +70,33 @@ $(()=>{
             newBreeder = $inputsUpdate.eq(3).val();
 
 
-        if(idHorse === '' || typeof idHorse === 'undefined' || idHorse !== newIdHorse){
+        $.ajax({
+            url: './horse/updateHorse',
+            type: 'PUT',
+            dataType: 'JSON', 
+            contentType: 'application/json',
+            data:  JSON.stringify({
+                id: idHorse,
+                name: newName, 
+                gender: newGender,
+                breeder: newBreeder
+            })
+
+        }).success((res) => {
             $('#update-modal').modal('hide');
 
-        }
-        else if(newName === name && newBreeder === breeder && newGender === gender){
-            $('#update-modal').modal('hide');
-        }
-        else if(newName.length < 2 || newName.length > 30 || newBreeder.length < 2 || newBreeder.length > 30) {
+            let obj = {
+                id: res._id,
+                name: res.name,
+                gedner: res.gender,
+                breeder: res.breeder
+            };
+            updateRow(obj, $this.parent());
 
-            $updateAlert.text('Name and breeder should have minimum 3 and maximum 30 characters!');
+        }).error((err) => { 
             $updateAlert.addClass('in');
-        }
-        else {
-
-            $.ajax({
-                url: './updateHorse',
-                type: 'PUT',
-                dataType: 'JSON', 
-                contentType: 'application/json',
-                data:  JSON.stringify({
-                    id: idHorse,
-                    name: newName, 
-                    gender: newGender,
-                    breeder: newBreeder
-                })
-
-            }).success((res) => {
-                $('#update-modal').modal('hide');
-                
-                let obj = {
-                    id: res._id,
-                    name: res.name,
-                    gedner: res.gender,
-                    breeder: res.breeder
-                };
-                updateRow(obj, $this.parent());
-
-            }).error((res) => { console.log(res);  });
-        }
+            $updateAlert.text(err.responseText); 
+        });
 
     });
     $('#add-btn').click(() => {
@@ -121,40 +109,31 @@ $(()=>{
         gender = $('#gender').val();
         breeder = $('#breeder').val();
 
+        $.ajax({
+            url: './horse/addHorse',
+            type: 'Post',
+            dataType: 'JSON', 
+            contentType: 'application/json',
+            data:  JSON.stringify({
+                name: name, 
+                gender: gender,
+                breeder: breeder
+            })
 
-        if(name.length < 2 || 
-           name.length > 30 || 
-           breeder.length < 2 || 
-           breeder.length > 30) {
+        }).success((res) => {
+            let obj = {
+                id: res._id,
+                name: res.name,
+                gedner: res.gender,
+                breeder: res.breeder
+            };
 
-            $addAlert.text('Name and breeder should have minimum 3 and maximum 30 characters!');
+            createRow(obj, $tbody);
+
+        }).error((err) => { 
             $addAlert.addClass('in');
-        }
-        else {
-            $.ajax({
-                url: './addHorse',
-                type: 'Post',
-                dataType: 'JSON', 
-                contentType: 'application/json',
-                data:  JSON.stringify({
-                    name: name, 
-                    gender: gender,
-                    breeder: breeder
-                })
-
-            }).success((res) => {
-                let obj = {
-                    id: res._id,
-                    name: res.name,
-                    gedner: res.gender,
-                    breeder: res.breeder
-                };
-          
-                createRow(obj, $tbody);
-
-            }).error((res) => { console.log(res);  });
-
-        }
+            $addAlert.text(err.responseText); 
+        });
     });
 
 });
