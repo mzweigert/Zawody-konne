@@ -1,0 +1,10 @@
+{
+  "libs": [
+ "underscore",
+    "browser",
+    "jquery"
+  ],
+  "plugins": {
+    "node": {}
+  }
+}

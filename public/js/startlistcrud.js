@@ -6,7 +6,7 @@ $(() => {
         shSelect = $('#selected-horses'),
         $goToGroups =$('#done-alert'),
         $GTGBtn = $('<button id="go-to-groups" type="button" class="btn btn-default">' + 
-                    'Przejdź do grup' + 
+                    '<a href="./startList/groups">Przejdź do grup</a>' + 
                     '<span class="glyphicon glyphicon-forward"></span>' +
                     '</button>');
 
@@ -17,7 +17,8 @@ $(() => {
             $this.text(e+1 +'.'+ $this.text().substring(2, $this.text().length));
         });
     };
-
+    $('[data-toggle="tooltip"]').tooltip(); 
+    
     let enableBtn = (stmnt) => {
         if(stmnt){
             $('#add-start-list').removeAttr('disabled');
@@ -36,8 +37,9 @@ $(() => {
         }
 
         res.forEach((elem) => {
+
             $.get('../../horse/findHorseById/' +elem.horse , (res) => { 
-                $('#selected-horses').append('<option value="' + res._id + '">'+ elem.startNumber +'.'+res.name + '</option>');
+                $('#selected-horses').append('<option value="' + res._id + '">'+ elem.startNumber +'.'+res.name+ ' p:'+res.gender +'</option>');
             });
         });
 
@@ -47,7 +49,7 @@ $(() => {
                 $.get('../../horse/findHorseById/' + elem._id , (res) => { 
                     let $found = shSelect.find('option[value="'+ res._id +'"]');
                     if(!$found.length)
-                        $('#available-horses').append('<option value="' + res._id + '">' + res.name + '</option>');
+                        $('#available-horses').append('<option value="' + res._id + '">' + res.name + ' p:' + res.gender + '</option>');
                 });
             });
         });
@@ -103,12 +105,13 @@ $(() => {
             $this = $(this);
             horsesAdded.push({
                 horse:$this.val(), 
-                startNumber: parseInt($this.text().substring(0, 2))
+                startNumber: parseInt($this.text().substr(0, 2)),
+                gender: $this.text().substr($this.text().indexOf('p:') +2)
             });
         });
 
         $.ajax({
-            url: '../../competition/addCompetitionReferringHorses',
+            url: '../../competition/addOrUpdateCompetitionReferringHorses',
             type: 'POST',
             dataType: 'JSON', 
             contentType: 'application/json',
@@ -117,19 +120,31 @@ $(() => {
                 referringHorses: horsesAdded
             })
         }).success((res) => {
-            if($goToGroups.hasClass('in')){
-                $goToGroups.text('Lista startowa zedytowana.');
+
+            if(res.horsesNotAdded.length){
+                res.horsesNotAdded.forEach((elem) => {
+                    let option = shSelect.find('option[value="' + elem.horse +'"]');
+                    option.text(option.text().substring(2));
+                    ahSelect.append(option.clone());
+                    option.remove();
+                });
+                 $goToGroups.text('Lista startowa zedytowana, lecz nie dodano wszystkich koni. Sprawdź ikonę informacji.');
             }
             else{
-                $goToGroups.addClass('in');
                 $goToGroups.text('Lista startowa dodana.');
             }
+            $goToGroups.addClass('in');
             $goToGroups.append($GTGBtn);
             enableBtn(false);
 
         }).error((err) => {
+       
             $alert.addClass('in');
             $alert.text(err.responseText);
         });
+    });
+
+    $('.container').on('click', '#go-to-groups', (e) => {
+
     });
 });

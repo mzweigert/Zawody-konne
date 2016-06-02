@@ -1,4 +1,4 @@
-/* jshint esnext: true, jquery:true */
+/* jshint esnext: true, jquery: true*/
 $(()=>{
 
     'use strict';
@@ -142,7 +142,7 @@ $(()=>{
 
         }).success((res) => {
             createRow(createObj(res), $tbody);
-        }).error((err) => { 
+        }).error((err) => {
             $addAlert.text(err.responseText);
             $addAlert.addClass('in');
         });

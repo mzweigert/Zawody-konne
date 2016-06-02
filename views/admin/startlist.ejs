@@ -14,34 +14,48 @@
 
         <div class="jumbotron">
             <div class="container text-center">
-                <p>Dodaj konie</p>
-                <p type="text" id="idComp" hidden><%= id %></p>
-                <div class="col-md-4">
-                    <p>Dostępne konie</p>
-                    <select class="horses-select form-control" multiple="true" id="available-horses"></select>
-                </div>
-                <div class="col-md-4 st-btns">
-                    <div class="input-group">
-                        <button id="remove-btn" type="submit" class="btn btn-success st-btn">
-                            <span class="glyphicon glyphicon-backward"></span>
-                            <span class="glyphicon glyphicon-backward"></span>
-                        </button>
-                        <button id="add-btn" type="submit" class="btn btn-success st-btn">
-                            <span class="glyphicon glyphicon-forward"></span>
-                            <span class="glyphicon glyphicon-forward "></span>
-                        </button>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <p type="text" id="idComp" hidden><%= id %></p>
                     </div>
-
+                    <div class="col-md-4">
+                        <p>Dodaj konie</p>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="left" title="Aby dodać konie danej płci
+                                                                                                                      ich ilość musi wynosić minimum 3."></span>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <p>Konie startujące</p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p>Dostępne konie</p>
+                        <select class="horses-select form-control" multiple="true" id="available-horses"></select>
+                    </div>
+                    <div class="col-md-4 st-btns">
+                        <div class="input-group">
+                            <button id="remove-btn" type="submit" class="btn btn-success st-btn">
+                                <span class="glyphicon glyphicon-backward"></span>
+                                <span class="glyphicon glyphicon-backward"></span>
+                            </button>
+                            <button id="add-btn" type="submit" class="btn btn-success st-btn">
+                                <span class="glyphicon glyphicon-forward"></span>
+                                <span class="glyphicon glyphicon-forward "></span>
+                            </button>
+                        </div>
 
-                    <select class="horses-select form-control" multiple="true" id="selected-horses"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <p>Konie startujące</p>
 
-                    <button id="move-up" class="btn-success glyphicon glyphicon-circle-arrow-up gl-move"></button>
-                    <button id="move-down" class="btn-success glyphicon glyphicon-circle-arrow-down gl-move"></button>
+                        <select class="horses-select form-control" multiple="true" id="selected-horses"></select>
 
+                        <button id="move-up" class="btn-success glyphicon glyphicon-circle-arrow-up gl-move"></button>
+                        <button id="move-down" class="btn-success glyphicon glyphicon-circle-arrow-down gl-move"></button>
+
+                    </div>
                 </div>
+
                 <button id="add-start-list" type="button" class="btn btn-success">
                     <% if (length > 0){ %>
                     Edytuj

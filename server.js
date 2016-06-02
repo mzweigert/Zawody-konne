@@ -1,6 +1,6 @@
 /* jshint node: true, esnext: true */
 'use strict';
-var http = require('http'),
+let http = require('http'),
     express = require('express'),
     flash = require('express-flash'),
     app = express(),
