@@ -100,13 +100,12 @@ router.get('/findUserById/:id', (req, res) => {
 router.put('/updateUser', (req, res) => {
 
     let body = req.body;
-    
+
     if(req.body.id === req.user.id){
         return res.status(400).send('Nie mozesz zmienić swoich danych, gdy jestes zalogowany!');
     }
     if(!body.id        ||
        !body.username  || 
-       !body.password  || 
        !body.firstname || 
        !body.lastname  || 
        !body.role) {

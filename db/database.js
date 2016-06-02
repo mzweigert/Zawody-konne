@@ -27,11 +27,11 @@ var competitionSchema = mongoose.Schema({
     },
     startList:{
         
-        referringHorses: [{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}],
+        referringHorses: [{horse:{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}, startNumber: Number}],
         groups: [{
             name: { type: String, required: true },
             gender: { type: String, required: true },
-            horses: [{horse:{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}, startNumber: Number}],
+            horses: [{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}],
             arbiters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
             results: [{type: mongoose.Schema.Types.ObjectId, ref: 'Result'}]
 

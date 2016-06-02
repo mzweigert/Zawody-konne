@@ -52,7 +52,7 @@ router.post('/addHorse', (req, res) => {
 router.delete('/deleteHorse', (req, res) => {
 
     console.log(req.body);
-    if(req.body.id === undefined){
+    if(!req.body.id){
 
         res.status(400).send('No content');
     }
@@ -66,12 +66,12 @@ router.delete('/deleteHorse', (req, res) => {
 });
 
 router.get('/findHorseById/:id', (req, res) => {
-    if(req.param('id') === undefined){
+    if(req.params.id === undefined){
 
         res.status(400).send('No content');
     }
 
-    db.Horse.findById(req.param('id'), (err, found) => {
+    db.Horse.findById(req.params.id, (err, found) => {
 
         if(err)
             res.status(400).json(err);

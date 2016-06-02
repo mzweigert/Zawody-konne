@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jquery" : "*",
     "bootstrap" : "*",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
@@ -21,12 +20,13 @@
     "mongoose": "*",
     "connect-mongo": "*",  
     "async": "*",
+    "underscore":"*",
     "morgan": "^1.4.1",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "socketio": "^1.0.0",
     "passport.socketio": "^3.6.1",
     "bcrypt-nodejs": "*",
-      "express-flash": "*"
+     "express-flash": "*"
   }
 }

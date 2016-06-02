@@ -8,11 +8,12 @@ $(()=>{
         startDate = $("#start-date"),
         arbitersCount = $("#arbiters-count"),
         ratesType = $("#rates-type"),
-        ratestInterval = $("#rates-interval"),
+        ratesInterval = $("#rates-interval"),
         $updateAlert = $('#update-alert'),
         $inputsUpdate = $('#inputs-update').children(),
         $tbody = $('#competitions-tbody'),
-        $this;
+        $this,
+        deleteRow;
 
 
 
@@ -20,33 +21,123 @@ $(()=>{
         format: 'YYYY-MM-DD HH:mm',
         sideBySide: true
     });
-
-    $.get('./competition/getAllCompetitions', (response) => {
-        let arr = [];
-        response.forEach((elem) => {
- 
-            let obj = {
-                id: elem._id,
-                name: elem.meta.name,
-                startDate: elem.meta.startDate,
-                arbitersCount: elem.meta.arbitersCount,
-                ratesType: elem.meta.ratesType,
-                startList: '<td><a href="./competition/'+ elem._id+'/startList">Przejdź do listy startowej</a></td>'
-            };
-            arr.push(obj);
-        });
-        makeRowsInTable(arr, $tbody);
+    $inputsUpdate.eq(2).datetimepicker({
+        format: 'YYYY-MM-DD HH:mm',
+        sideBySide: true
     });
 
+    let createObj = (elem) => {
+        let ratesInfo = elem.meta.ratesType;
+        let type = ratesInfo.substr(0, ratesInfo.indexOf(' ')),
+            interval = ratesInfo.substr(ratesInfo.indexOf(' ') +1);
+
+        return {
+            id: elem._id,
+            name: elem.meta.name,
+            startDate: elem.meta.startDate,
+            arbitersCount: elem.meta.arbitersCount,
+            ratesType:  $("#rates-type").find('option[value="'+type+'"]').text() + ' ' + $("#rates-interval").find('option[value="'+interval+'"]').text(),
+            startList: '<td><a href="./competition/'+ elem._id+'/startList">Przejdź do listy startowej</a></td>'
+        };
+    };
+    $.get('./competition/getAllCompetitions', (response) => {
+        let arr = [];
+
+        response.forEach((elem) => {
+            arr.push(createObj(elem));
+        });
+
+        makeRowsInTable(arr, $tbody);
+    });
+    $tbody.on('click', '.remove-row', (e) => {
+
+        deleteRow = $(e.target).closest('tr');
+    });
+    $("#delete-btn").on('click', () => {
+
+        idCompetition = deleteRow.children(0).eq(0).text();
+
+        if(idCompetition){
+            console.log('ADASD');
+            $.ajax({
+                url: './competition/deleteCompetition',
+                data: JSON.stringify({ id: idCompetition }),
+                type: 'DELETE', 
+                dataType: 'JSON', 
+                contentType: 'application/json',
+
+            }).success((res) => {
+                deleteRow.remove();
+            });
+
+        }
+    });
+    $tbody.on('click', '.update-row', (e) => {
+
+
+        $this = $(e.target).closest('tr').children();
+        $updateAlert.removeClass('in');
+        $updateAlert.text('');
+
+        $inputsUpdate.eq(4).children().prop('selected', false);
+        $inputsUpdate.eq(5).children().prop('selected', false);
+
+        idCompetition = $this.eq(0).text();
+        name = $this.eq(1).text();
+        startDate = $this.eq(2).text();
+        arbitersCount = $this.eq(3).text();
+        ratesType = $this.eq(4).text();
+
+        $inputsUpdate.eq(0).val(idCompetition);
+        $inputsUpdate.eq(1).val(name);
+        $inputsUpdate.eq(2).val(startDate);
+        $inputsUpdate.eq(3).val(arbitersCount);
+        $inputsUpdate.eq(4).find('option:contains('+ratesType.substr(0, ratesType.indexOf(' '))+')').prop('selected', true);
+        $inputsUpdate.eq(5).find('option:contains('+ratesType.substr(ratesType.indexOf(' ')+1) +')').prop('selected', true);
+    });
+    $('#update-btn').on('click', () => {
+
+        $updateAlert.removeClass('in');
+        $updateAlert.text('');
+
+        let newName = $inputsUpdate.eq(1).val(),
+            newStartDate = $inputsUpdate.eq(2).val(),
+            newArbitersCount = $inputsUpdate.eq(3).val(),
+            newRatesType = $inputsUpdate.eq(4).val(),
+            newRatesInterval = $inputsUpdate.eq(5).val();
+
+        $.ajax({
+            url: './competition/updateCompetitionMeta',
+            type: 'PUT',
+            dataType: 'JSON', 
+            contentType: 'application/json',
+            data:  JSON.stringify({
+                meta: {
+                    id: $inputsUpdate.eq(0).val(),
+                    name: newName, 
+                    startDate: newStartDate,
+                    arbitersCount: newArbitersCount,
+                    ratesType: newRatesType + ' ' + newRatesInterval  
+                }
+            })
+
+        }).success((res) => {
+            $('#update-modal').modal('hide');
+            updateRow(createObj(res), $this.parent());
+        }).error((err) => { 
+            $updateAlert.addClass('in');
+            $updateAlert.text(err.responseText); 
+        });
+
+    });
     $('#add-btn').click(() => {
 
         let $addAlert = $('#add-alert');
         $addAlert.removeClass('in');
         $addAlert.text('');
 
-        console.log(name.val(), startDate.val(), arbitersCount.val());
         $.ajax({
-            url: './addCompetitionMeta',
+            url: './competition/addCompetitionMeta',
             type: 'Post',
             dataType: 'JSON', 
             contentType: 'application/json',
@@ -55,22 +146,12 @@ $(()=>{
                     name: name.val(), 
                     startDate: startDate.val(),
                     arbitersCount: arbitersCount.val(),
-                    ratesType: '10-20-30'
+                    ratesType: ratesType.val() + ' ' + ratesInterval.val()
                 }
             })
 
         }).success((res) => {
-
-            let obj = {
-                id: res._id,
-                name: res.meta.name,
-                startDate: res.meta.startDate,
-                arbitersCount: res.meta.arbitersCount,
-                ratesType: res.meta.ratesType
-            };
-
-            createRow(obj, $tbody);
-
+            createRow(createObj(res), $tbody);
         }).error((err) => {
             $addAlert.addClass('in');
             $addAlert.text(err.responseText);

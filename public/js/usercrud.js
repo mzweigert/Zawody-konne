@@ -15,19 +15,22 @@ $(()=>{
         $tbody = $('#users-tbody'),
         $this;
 
+    let createObj = (elem) => {
+        return {
+            id: elem._id,
+            username: elem.username,
+            password: elem.password,
+            firstname: elem.firstname,
+            lastname: elem.lastname,
+            role: elem.role
+
+        };
+    };
+
     $.get('./user/getAllUsers', (response) => {
         let userArr = [];
         response.forEach((elem) => {
-            let obj = {
-                id: elem._id,
-                username: elem.username,
-                password: elem.password,
-                firstname: elem.firstname,
-                lastname: elem.lastname,
-                role: elem.role
-
-            };
-            userArr.push(obj);
+            userArr.push(createObj(elem));
         });
         makeRowsInTable(userArr, $tbody);
     });
@@ -41,7 +44,7 @@ $(()=>{
         $addAlert.removeClass('in');
         $addAlert.text('');
         idUser = deleteRow.children(0).eq(0).text();
-        
+
         $.ajax({
             url: './user/deleteUser',
             data: JSON.stringify({ id: idUser }),
@@ -103,16 +106,7 @@ $(()=>{
 
         }).success((res) => {
             $('#update-modal').modal('hide');
-
-            let obj = {
-                id: res._id,
-                username: res.username,
-                password: res.password,
-                firstname: res.firstname,
-                lastname: res.lastname,
-                role: res.role
-            };
-            updateRow(obj, $this.parent());
+            updateRow(createObj(res), $this.parent());
 
         }).error((err) => { 
             $updateAlert.text(err.responseText);
@@ -147,17 +141,7 @@ $(()=>{
             })
 
         }).success((res) => {
-            let obj = {
-                id: res._id,
-                username: res.username,
-                password: res.password,
-                firstname: res.firstname,
-                lastname: res.lastname,
-                role: res.role
-            };
-
-            createRow(obj, $tbody);
-
+            createRow(createObj(res), $tbody);
         }).error((err) => { 
             $addAlert.text(err.responseText);
             $addAlert.addClass('in');

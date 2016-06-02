@@ -11,19 +11,56 @@
         <link rel="stylesheet" href="/css/crud.css">
     </head>
     <body>
-        
+
         <div class="jumbotron">
             <div class="container text-center">
-                <%if (startList.referringHorses.length > 0){ %>
-                <% } %>
-                <input id="horse-count" type="number" min="5" class="form-control" placeholder="liczba koni">
-               
-                <input id="horse-count" type="button" min="5" class="btn btn-succes" placeholder="liczba koni">
-               
-                
-               
+                <p>Dodaj konie</p>
+                <p type="text" id="idComp" hidden><%= id %></p>
+                <div class="col-md-4">
+                    <p>Dostępne konie</p>
+                    <select class="horses-select form-control" multiple="true" id="available-horses"></select>
+                </div>
+                <div class="col-md-4 st-btns">
+                    <div class="input-group">
+                        <button id="remove-btn" type="submit" class="btn btn-success st-btn">
+                            <span class="glyphicon glyphicon-backward"></span>
+                            <span class="glyphicon glyphicon-backward"></span>
+                        </button>
+                        <button id="add-btn" type="submit" class="btn btn-success st-btn">
+                            <span class="glyphicon glyphicon-forward"></span>
+                            <span class="glyphicon glyphicon-forward "></span>
+                        </button>
+                    </div>
+
+                </div>
+                <div class="col-md-4">
+                    <p>Konie startujące</p>
+
+                    <select class="horses-select form-control" multiple="true" id="selected-horses"></select>
+
+                    <button id="move-up" class="btn-success glyphicon glyphicon-circle-arrow-up gl-move"></button>
+                    <button id="move-down" class="btn-success glyphicon glyphicon-circle-arrow-down gl-move"></button>
+
+                </div>
+                <button id="add-start-list" type="button" class="btn btn-success">
+                    <% if (length > 0){ %>
+                    Edytuj
+                    <% } else { %>
+                    Dodaj
+                    <% } %>
+                </button>
+
+                <div class="alert alert-success fade" id="done-alert">
+                    Dodawanie koni do listy startowej, zakończone sukcesem.
+
+                </div>
+
+                <div class="alert alert-danger fade" id='alert'></div>
+
+
+
             </div>
         </div>
-     
+
     </body>
 </html>
