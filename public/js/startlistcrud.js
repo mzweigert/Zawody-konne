@@ -6,7 +6,7 @@ $(() => {
         shSelect = $('#selected-horses'),
         $goToGroups =$('#done-alert'),
         $GTGBtn = $('<button id="go-to-groups" type="button" class="btn btn-default">' + 
-                    '<a href="./startList/groups">Przejdź do grup</a>' + 
+                    '<a href="./addGroups">Przejdź do grup</a>' + 
                     '<span class="glyphicon glyphicon-forward"></span>' +
                     '</button>');
 
@@ -14,11 +14,12 @@ $(() => {
     let sortSHSelect = () => {
         shSelect.children().each(function(e){
             $this = $(this);
-            $this.text(e+1 +'.'+ $this.text().substring(2, $this.text().length));
+            console.log($this.text().substring(2, $this.text().length));
+            $this.text(e+1 +'.'+ $this.text().substring($this.text().indexOf('.') +1, $this.text().length));
         });
     };
     $('[data-toggle="tooltip"]').tooltip(); 
-    
+
     let enableBtn = (stmnt) => {
         if(stmnt){
             $('#add-start-list').removeAttr('disabled');
@@ -27,30 +28,29 @@ $(() => {
             $('#add-start-list').attr('disabled', 'true'); 
         }
     };
-    $.get('../getCompetitionReferringHorses/'+ $('#idComp').text() , (res) => {
+    $.get('../'+$('#idComp').text()+ '/getReferringHorses/' , (res) => {
 
-        if(res.length){
+        if(res.Klacz || res.Ogier){
             enableBtn(false);
             $goToGroups.addClass('in');
             $goToGroups.text('Te zawody posiadają już dodaną liste startową. Zaktualizuj lub przejdź do grup.');
             $goToGroups.append($GTGBtn);
         }
-
-        res.forEach((elem) => {
-
-            $.get('../../horse/findHorseById/' +elem.horse , (res) => { 
-                $('#selected-horses').append('<option value="' + res._id + '">'+ elem.startNumber +'.'+res.name+ ' p:'+res.gender +'</option>');
+        if(res.Klacz){
+            res.Klacz.forEach((elem) => {
+                $('#selected-horses').append('<option value="' + elem.horse._id + '">'+ elem.startNumber +'.'+elem.horse.name+ ' p:'+elem.horse.gender +'</option>');
             });
-        });
+        }
+        if(res.Ogier){
+            res.Ogier.forEach((elem) => {
+                $('#selected-horses').append('<option value="' + elem.horse._id + '">'+ elem.startNumber +'.'+elem.horse.name+ ' p:'+elem.horse.gender +'</option>');
+            });
+        }
 
     }).then((res) => {
-        $.get('../../horse/getAllHorses', (res) => {
+        $.get('../'+$('#idComp').text() + '/getAvailableHorses/', (res) => {
             res.forEach((elem) => {
-                $.get('../../horse/findHorseById/' + elem._id , (res) => { 
-                    let $found = shSelect.find('option[value="'+ res._id +'"]');
-                    if(!$found.length)
-                        $('#available-horses').append('<option value="' + res._id + '">' + res.name + ' p:' + res.gender + '</option>');
-                });
+                $('#available-horses').append('<option value="' + elem._id + '">' + elem.name + ' p:' + elem.gender + '</option>');
             });
         });
     });
@@ -111,7 +111,7 @@ $(() => {
         });
 
         $.ajax({
-            url: '../../competition/addOrUpdateCompetitionReferringHorses',
+            url: '../addOrUpdateReferringHorses',
             type: 'POST',
             dataType: 'JSON', 
             contentType: 'application/json',
@@ -128,7 +128,7 @@ $(() => {
                     ahSelect.append(option.clone());
                     option.remove();
                 });
-                 $goToGroups.text('Lista startowa zedytowana, lecz nie dodano wszystkich koni. Sprawdź ikonę informacji.');
+                $goToGroups.text('Lista startowa zedytowana, lecz nie dodano wszystkich koni. Sprawdź ikonę informacji.');
             }
             else{
                 $goToGroups.text('Lista startowa dodana.');
@@ -138,13 +138,10 @@ $(() => {
             enableBtn(false);
 
         }).error((err) => {
-       
+
             $alert.addClass('in');
             $alert.text(err.responseText);
         });
     });
 
-    $('.container').on('click', '#go-to-groups', (e) => {
-
-    });
 });

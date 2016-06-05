@@ -5,7 +5,7 @@ var express = require('express'),
     db = require('../db/database.js'),
     competition = require('./competition.js'),
     login = require('./login.js'),
-    admin   = require('./mw_admin.js'),
+    admin   = require('./admin/mw_admin.js'),
     arbiter = require('./mw_arbiter.js'),
     router = express.Router();
 

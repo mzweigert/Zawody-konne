@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "nodemon" : "*",
     "bootstrap" : "*",
     "express": "^4.13.4",
     "express-session": "^1.13.0",

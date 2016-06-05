@@ -31,8 +31,8 @@ var competitionSchema = mongoose.Schema({
         groups: [{
             name: { type: String, required: true },
             gender: { type: String, required: true },
-            horses: [{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}],
-            arbiters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+            horses: [{type: mongoose.Schema.Types.ObjectId, ref: 'Horse', unique: true}],
+            arbiters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true}],
             results: [{type: mongoose.Schema.Types.ObjectId, ref: 'Result'}]
 
         }]

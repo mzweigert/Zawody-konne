@@ -14,6 +14,7 @@
     ],
     "dependencies": {
         "jquery": "*",
+        "jquery-ui": "*",
         "bootstrap": "*",
         "eonasdan-bootstrap-datetimepicker": "*"
     }

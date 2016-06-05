@@ -14,7 +14,9 @@
 
         <div class="jumbotron">
             <div class="container text-center">
-
+                <% if (length > 0){ %>
+                <p>Uwaga! Edytując listę startową kasujesz wszystkie grupy.</p>
+                <% } %>
                 <div class="row">
                     <div class="col-md-4">
                         <p type="text" id="idComp" hidden><%= id %></p>

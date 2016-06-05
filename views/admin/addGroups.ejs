@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> Zawody </title>
+        <script src='/bower_components/jquery/dist/jquery.js'></script>
+        <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/groupscrud.js"></script>
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/groups.css">
+    </head>
+    <body>
+
+        <div class="jumbotron">
+            <div class="container text-center groups">
+
+                <p>Utwórz grupy</p>
+                <p type="text" id="idComp" hidden><%= id %></p>
+
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="alert alert-danger fade" id='alert'></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <select class="form-control gender-select" id="gender">
+                            <% if(maresGroups.length) {%>
+                            <option>Klacz</option>
+                            <% } %>
+                            <% if(stallionsGroups.length) {%>
+                            <option>Ogier</option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <div class="mares-rows">
+                    <% maresGroups.forEach((elem, i) =>{%>
+                    <div class="row mare-row" id="MGroup<%=i%>">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Nazwa grupy</label>
+                                <input type="text" class="form-control name-group" placeholder="Nazwa grupy">
+                            </div>
+                            <div class="input-group">
+                                <button type="button" class="btn btn-success add-group-btn">Dodaj</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Klacze w grupie</label>
+                            <select class="multiple-select form-control group-mares" multiple="true">
+                                <% elem.forEach((mare) => {%>
+                                <option value="<%= mare.horse._id %>"><%= mare.startNumber %>.<%= mare.horse.name %> </option>
+                                <% });%>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label>Dostępni&nbsp;sędziowie</label>
+                            <select class="multiple-select form-control available-arbiters" multiple="true">
+                                <% arbiters.forEach((elem) =>{  %>
+                                <option value="<%= elem._id %>">  <%= elem.firstname %> <%= elem.lastname %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 st-btns">
+                            <div class="input-group">
+                                <button type="submit" class="btn btn-success rem-btn">
+                                    <span class="glyphicon glyphicon-backward"></span>
+                                    <span class="glyphicon glyphicon-backward"></span>
+                                </button>
+                                <button type="submit" class="btn btn-success add-btn">
+                                    <span class="glyphicon glyphicon-forward"></span>
+                                    <span class="glyphicon glyphicon-forward "></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Sędziowie&nbsp;w&nbsp;grupie</label>
+                            <select class="multiple-select form-control group-arbiters" multiple="true"></select>
+                        </div>
+                    </div>
+                    <% });%>
+                </div>
+
+                <div class="stallions-rows">
+                    <% stallionsGroups.forEach((elem, i) =>{  %>
+                    <div class="row stallion-row" id="SGroup<%=i%>">
+                        <div class="col-sm-3">
+                            <div class="form-inline">
+                                <label>Nazwa grupy</label>
+
+                                <input type="text" class="form-control name-group" placeholder="Nazwa grupy">
+                            </div>
+                            <div class="input-group">
+                                <button type="button" class="btn btn-success add-group-btn">Dodaj</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <label>Ogiery w grupie</label>
+                            <select class="multiple-select form-control group-stallions" multiple="true">
+                                <% elem.forEach((stallion) => {%>
+                                <option value="<%= stallion.horse._id %>"><%= stallion.startNumber %>.<%= stallion.horse.name %> </option>
+                                <% });%>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Dostępni&nbsp;sędziowie</label>
+                            <select class="multiple-select form-control available-arbiters" multiple="true">
+                                <% arbiters.forEach((elem) =>{  %>
+                                <option value="<%= elem._id %>">  <%= elem.firstname %> <%= elem.lastname %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 st-btns">
+                            <div class="input-group">
+                                <button type="submit" class="btn btn-success rem-btn">
+                                    <span class="glyphicon glyphicon-backward"></span>
+                                    <span class="glyphicon glyphicon-backward"></span>
+                                </button>
+                                <button type="submit" class="btn btn-success add-btn">
+                                    <span class="glyphicon glyphicon-forward"></span>
+                                    <span class="glyphicon glyphicon-forward "></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Sędziowie&nbsp;w&nbsp;grupie</label>
+                            <select class="multiple-select form-control group-arbiters" multiple="true"></select>
+                        </div>
+                    </div>
+                    <% });%>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

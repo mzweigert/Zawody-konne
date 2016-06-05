@@ -10,6 +10,15 @@ var createHash = function(password){
     return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
 };
 
+router.get('/getAllArbiters', (req, res) => {
+    db.User.find({role: 'arbiter'}, 'firstname lastname', (err, arbiters) => {
+
+        if(err)
+            res.status(404).json(err);
+        else
+            res.status(200).json(arbiters); 
+    });
+});
 router.get('/getAllUsers', (req, res) => {
 
     db.User.find({}, 'username password firstname lastname role', (err, users) => {
@@ -39,7 +48,7 @@ router.post('/addUser', (req, res) => {
     if( body.role !== 'admin' && body.role !== 'arbiter') {
         return res.status(400).send('Nieprawidlowa rola!');
     }
-    
+
     db.User.findOne({'username': req.body.username }, (err, user) => {
 
         if(user)
