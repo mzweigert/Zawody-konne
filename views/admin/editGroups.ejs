@@ -16,7 +16,7 @@
         <div class="jumbotron">
             <div class="container text-center groups">
 
-                <p>Utwórz grupy</p>
+                <p>Edytuj grupy</p>
                 <p type="text" id="idComp" hidden><%= id %></p>
 
 
@@ -47,6 +47,7 @@
                                 <button type="button" class="btn btn-success edit-group-btn">Edytuj</button>
                             </div>
                         </div>
+
                         <div class="col-sm-3">
                             <label>Klacze w grupie</label>
                             <select class="multiple-select form-control group-mares" multiple="true">
@@ -94,17 +95,17 @@
                         <div class="col-sm-3">
                             <div class="form-inline">
                                 <label>Nazwa grupy</label>
-
-                                <input type="text" class="form-control name-group" placeholder="Nazwa grupy">
+                                <input type="text" class="form-control name-group" placeholder="Nazwa grupy" value="<%= elem.name %>">
                             </div>
                             <div class="input-group">
-                                <button type="button" class="btn btn-success add-group-btn">Dodaj</button>
+                                <button type="button" class="btn btn-success add-group-btn">Edytuj</button>
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <label>Ogiery w grupie</label>
                             <select class="multiple-select form-control group-stallions" multiple="true">
-                                <% elem.forEach((stallion) => {%>
+
+                                <% elem.horses.forEach((stallion) => {%>
                                 <option value="<%= stallion.horse._id %>"><%= stallion.startNumber %>.<%= stallion.horse.name %> </option>
                                 <% });%>
                             </select>
@@ -127,7 +128,11 @@
                         </div>
                         <div class="col-sm-2">
                             <label>Sędziowie&nbsp;w&nbsp;grupie</label>
-                            <select class="multiple-select form-control group-arbiters" multiple="true"></select>
+                            <select class="multiple-select form-control group-arbiters" multiple="true">
+                                <% elem.arbiters.forEach((arb) => {%>
+                                <option value="<%= arb._id %>"><%= arb.firstname %> <%= arb.lastname %> </option>
+                                <% });%>
+                            </select>
                         </div>
                     </div>
                     <% });%>

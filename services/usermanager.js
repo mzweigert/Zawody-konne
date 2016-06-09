@@ -84,13 +84,24 @@ router.delete('/deleteUser', (req, res) => {
         return res.status(400).send('Nie mozesz usunac siebie');
     }
 
-
-    db.User.findByIdAndRemove(req.body.id, (err) => {
+    db.Competition.find({'startList.groups.arbiters' : req.body.id}, (err, found) => {
         if(err)
-            res.status(400).json(err);
-        else
-            res.status(200).json({ message: 'usunięto!' });  
+            return res.status(400).json(err);
+
+        if(found.length){
+            res.status(400).send("Nie możesz usunąć użytkownika, który występuje w zawodach.");
+        }
+        else{
+            db.User.findByIdAndRemove(req.body.id, (err) =>{
+
+                if(err)
+                    return res.status(400).json(err);
+
+                return res.status(200).send();
+            });
+        }
     });
+
 });
 
 router.get('/findUserById/:id', (req, res) => {

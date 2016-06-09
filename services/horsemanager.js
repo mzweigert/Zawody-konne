@@ -57,11 +57,23 @@ router.delete('/deleteHorse', (req, res) => {
         res.status(400).send('No content');
     }
 
-    db.Horse.findByIdAndRemove(req.body.id, (err) => {
+    db.Competition.find({'startList.referringHorses.horse' : req.body.id}, (err, found) => {
         if(err)
-            res.status(400).json(err);
-        else
-            res.status(200).json({ message: 'usunięto!' });  
+            return res.status(400).json(err);
+
+      
+        if(found.length){
+            res.status(400).send("Nie możesz usunąć konia, który występuje w zawodach.");
+        }
+        else{
+            db.Horse.findByIdAndRemove(req.body.id, (err) =>{
+               
+                if(err)
+                    return res.status(400).json(err);
+
+                return res.status(200).send();
+            });
+        }
     });
 });
 
@@ -72,7 +84,7 @@ router.get('/findHorseById/:id', (req, res) => {
     }
 
     db.Horse.findById(req.params.id, (err, found) => {
-
+        
         if(err)
             res.status(400).json(err);
         else

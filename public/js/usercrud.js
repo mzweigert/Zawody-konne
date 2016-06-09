@@ -27,12 +27,17 @@ $(()=>{
         };
     };
 
+    $(window).resize(function() {
+        resizeTable($tbody.parent());
+    }).resize();
+
     $.get('./user/getAllUsers', (response) => {
         let userArr = [];
         response.forEach((elem) => {
             userArr.push(createObj(elem));
         });
         makeRowsInTable(userArr, $tbody);
+        resizeTable($tbody.parent());
     });
 
     $tbody.on('click', '.remove-row', (e) => {
@@ -49,11 +54,12 @@ $(()=>{
             url: './user/deleteUser',
             data: JSON.stringify({ id: idUser }),
             type: 'DELETE', 
-            dataType: 'JSON', 
             contentType: 'application/json',
 
         }).success((res) => {
-            deleteRow.remove();
+            deleteRow.css({'background-color': '#d9534f'});
+            deleteRow.hide(500);
+            window.setTimeout(() => deleteRow.remove(), 500);
         }).error((err) => {
             $addAlert.addClass('in');
             $addAlert.text(err.responseText);
@@ -142,6 +148,9 @@ $(()=>{
 
         }).success((res) => {
             createRow(createObj(res), $tbody);
+            $tbody.scrollTop($tbody[0].scrollHeight);
+            $tbody.children().last().css({backgroundColor: '#5cb85c'});
+            $tbody.children().last().animate({backgroundColor: 'transparent'}, 1000);
         }).error((err) => {
             $addAlert.text(err.responseText);
             $addAlert.addClass('in');

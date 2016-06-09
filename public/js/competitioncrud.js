@@ -19,12 +19,19 @@ $(()=>{
 
     startDate.datetimepicker({
         format: 'YYYY-MM-DD HH:mm',
-        sideBySide: true
+        sideBySide: true,
+        keepOpen: true
+  
+   
     });
     $inputsUpdate.eq(2).datetimepicker({
         format: 'YYYY-MM-DD HH:mm',
         sideBySide: true
     });
+
+    $(window).resize(function() {
+        resizeTable($tbody.parent());
+    }).resize();
 
     let createObj = (elem) => {
         let ratesInfo = elem.meta.ratesType;
@@ -37,7 +44,7 @@ $(()=>{
             startDate: elem.meta.startDate,
             arbitersCount: elem.meta.arbitersCount,
             ratesType:  $("#rates-type").find('option[value="'+type+'"]').text() + ' ' + $("#rates-interval").find('option[value="'+interval+'"]').text(),
-            startList: '<td><a href="./competition/'+ elem._id+'/startList">Przejdź do listy startowej</a></td>'
+            startList: '<td><a href="./competition/'+ elem._id+'/startList">Lista startowa</a></td>'
         };
     };
     $.get('./competition/getAllCompetitions', (response) => {
@@ -48,6 +55,7 @@ $(()=>{
         });
 
         makeRowsInTable(arr, $tbody);
+        resizeTable($tbody.parent());
     });
     $tbody.on('click', '.remove-row', (e) => {
 
@@ -58,7 +66,7 @@ $(()=>{
         idCompetition = deleteRow.children(0).eq(0).text();
 
         if(idCompetition){
-            console.log('ADASD');
+
             $.ajax({
                 url: './competition/deleteCompetition',
                 data: JSON.stringify({ id: idCompetition }),
@@ -67,7 +75,9 @@ $(()=>{
                 contentType: 'application/json',
 
             }).success((res) => {
-                deleteRow.remove();
+                deleteRow.css({'background-color': '#d9534f'});
+                deleteRow.hide(500);
+                window.setTimeout(() => deleteRow.remove(), 500);
             });
 
         }
@@ -152,6 +162,9 @@ $(()=>{
 
         }).success((res) => {
             createRow(createObj(res), $tbody);
+            $tbody.scrollTop($tbody[0].scrollHeight);
+            $tbody.children().last().css({backgroundColor: '#5cb85c'});
+            $tbody.children().last().animate({backgroundColor: 'transparent'}, 1000);
         }).error((err) => {
             $addAlert.addClass('in');
             $addAlert.text(err.responseText);

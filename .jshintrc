@@ -3,6 +3,7 @@
       "createRow": true,
       "updateRow": true,
       "makeRowsInTable": true,
+      "resizeTable": true,
       "console": true,
       "window": true
   }

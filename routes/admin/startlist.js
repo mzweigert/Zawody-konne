@@ -8,22 +8,58 @@ var express = require("express"),
 
 router.get('/:id/startList', (req,res) =>{
 
-    console.log(req.params.id);
+
     if(!req.params.id){
         return res.status(404);
     }
-    db.Competition.findById(req.params.id, (err, found) => {
+
+
+    db.Competition.findById(req.params.id)
+        .populate('startList.referringHorses.horse')
+        .exec((err, found) => {
 
         if(err)
             return res.status(400).json(err);
         if(!found)
             return res.status(404);
 
+        db.Horse.find({}, (err, horses) => {
+            if(err)
+                res.status(400).json(err);
+            else{
 
-        res.render('admin/startlist', { 
-            id: found._id, 
-            length: found.startList.referringHorses.length
+                let refHLength =  found.startList.referringHorses.length,
+                    availHorses =_.filter(horses, function(obj){ 
+                        return _.every(found.startList.referringHorses, (obj2) =>{
+                            return obj._id.toString() !== obj2.horse._id.toString();
+                        });
+                    }); 
+
+                let lengthGrH = 0;
+
+                found.startList.groups.forEach((elem) => {
+                    lengthGrH += elem.horses.length;
+                });
+
+                let editGroups;
+                
+                if(refHLength)
+                    editGroups = lengthGrH === refHLength? true : false;
+                else
+                    editGroups = false;
+                
+           
+                res.render('admin/startlist', { 
+                    id: found._id, 
+                    referringHorses: found.startList.referringHorses,
+                    availableHorses: availHorses,
+                    editGroups: editGroups
+                });
+
+            }
         });
+
+
     });
 
 });
@@ -80,6 +116,7 @@ router.post('/addOrUpdateReferringHorses', (req, res) => {
             });
 
             found.startList.referringHorses = horsesToAdd;
+            found.startList.currentVoteHorse = undefined;
             found.startList.groups = [];
             found.save((err) => {
                 if(err)
@@ -91,54 +128,6 @@ router.post('/addOrUpdateReferringHorses', (req, res) => {
 
 
     });  
-
-});
-
-router.get('/:id/getAvailableHorses', (req, res) => {
-
-    if(!req.params.id){
-        return res.status(400).send("Brak Id!");
-    }
-
-    db.Competition.findById(req.params.id)
-        .populate('startList.referringHorses.horse')
-        .exec((err, found) => {
-
-        db.Horse.find({}, (err, horses) => {
-            if(err)
-                res.status(400).json(err);
-            else{
-
-                let arr =_.filter(horses, function(obj){ 
-                    return _.every(found.startList.referringHorses, (obj2) =>{
-                        return obj._id.toString() !== obj2.horse._id.toString();
-                    });
-                }); 
-
-                res.status(200).json(arr);
-            }
-        });
-    });
-
-});
-router.get('/:id/getReferringHorses', (req, res) => {
-
-    if(!req.params.id){
-        return res.status(400).send("Brak Id!");
-    }
-
-    db.Competition.findById(req.params.id)
-        .populate('startList.referringHorses.horse')
-        .exec((err, found) => {
-
-        let arr = _.groupBy(found.startList.referringHorses, (elem) => {
-            return elem.horse.gender;
-        });
-        if(err)
-            res.status(400).json(err);
-        else
-            res.status(200).json(arr);
-    });
 
 });
 

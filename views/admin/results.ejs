@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <script src='/bower_components/jquery/dist/jquery.js'></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/results.js"></script>
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/results.css">
+    </head>
+    <body>
+        <div class="jumbotron">
+            <div hidden="true" id="idComp" value="<%= idComp %>"></div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-inline text-center">
+                        <div class="form-group text-center">
+                            <button type="button" id="remind-arbiters" class="btn btn-lg btn-success">Upomnij sędziów</button>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="button" id="allow-estimation" class="btn btn-lg btn-success">Zezwól na ocenianie konia</button>
+                        </div>
+                        <div class="form-group text-center">
+                            <a type="button" class="btn btn-lg btn-success" href="#">Zawody</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="alert alert-danger fade text-center" id='alert'></div>
+            <div class="groups">
+                <div class="row">
+                    <div class="col-sm-6 text-center">
+                        <label>Wybierz grupe</label>
+                        <select class="select-group form-control" size="<%= groups.length ===1? 2: groups.length %>">
+                            <% groups.forEach((group, i) => { %>
+                            <option class="btn btn-success"  value="<%= group._id %>">Nazwa grupy: <%= group.name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 text-center">
+                        <label>Konie w grupie</label>
+                        <% groups.forEach((group, i) => { %>
+                        <select class="select-horse form-control" size="<%= group.horses.length %>" id="<%= group._id %>">
+                            <% group.horses.forEach((horse, i) => { %>
+                            <option class="btn btn-success" value="<%= horse._id %>"><%= horse.name %></option>  
+                            <% }); %>
+                        </select>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="jumbotron" id="results">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Sędzia</th>
+                        <th>Ogólna</th>
+                        <th>Głowa</th>
+                        <th>Ciało</th>
+                        <th>Nogi</th>
+                        <th>Ruch</th>
+                    </tr>
+                </thead>
+                <tbody id="results-tbody">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

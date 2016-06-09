@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> Zawody </title>
+
+        <script src='/bower_components/jquery/dist/jquery.js'></script>
+        <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/arbiter.js"></script>
+        <link rel="stylesheet" href="/bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/arbiter.css">
+
+
+    </head>
+    <body>
+        <div class="jumbotron">
+            <div id="arbiter-panel" style="<% if(currentHorse){ %> display: block; <% } else { %> display: none; <% } %>">
+                <div hidden="true" id="idArbiter" value="<%= id %>">></div>
+                <div hidden="true" id="idResult" value="<%= result? result._id : null %>"></div>
+                <div hidden="true" id="idComp" value="<%= idComp %>">></div>
+                <div hidden="true" id="idHorse" <% if(currentHorse){ %> value="<%= currentHorse.horse._id %>" <% } %>></div>
+                <div hidden="true" id="ratesInfo" value="<%= ratesType %>"></div>
+                <h3 style="margin-left: 20px;" id="horseDesc">
+                    <% if(currentHorse){ %> Nr. startowy:  <%= currentHorse.startNumber %> <% } %>
+                </h3>
+                <div><% result %></div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h3>Ogólna</h3>
+                    </div>
+                    <div class="col-sm-8">
+                        <div id="overall" class="slider"></div>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3 class="result"><%= result? result.overall : 0 %></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h3>Głowa</h3>
+                    </div>
+                    <div class="col-sm-8">
+                        <div id="head" class="slider"></div>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3 class="result"><%= result? result.head : 0 %></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h3>Ciało</h3>
+                    </div>
+                    <div class="col-sm-8">
+                        <div id="body" class="slider"></div>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3 class="result"><%= result? result.body : 0 %></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h3>Nogi</h3>
+                    </div>
+                    <div class="col-sm-8">
+                        <div id="legs" class="slider"></div>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3 class="result"><%= result? result.legs : 0 %></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h3>Ruch</h3>
+                    </div>
+                    <div class="col-sm-8">
+                        <div id="movement" class="slider"></div>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3 class="result"><%= result? result.movement : 0 %></h3>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="text-center" id="no-curr-horse" style="<% if(currentHorse){ %> display: none; <% } else { %> display: block; <% } %>">
+                Nie oceniasz aktualnie żadnego konia.
+            </h1>
+
+        </div>
+    </body>
+</html>
+

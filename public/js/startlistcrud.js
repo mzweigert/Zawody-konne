@@ -5,10 +5,10 @@ $(() => {
         ahSelect = $('#available-horses'),
         shSelect = $('#selected-horses'),
         $goToGroups =$('#done-alert'),
-        $GTGBtn = $('<button id="go-to-groups" type="button" class="btn btn-default">' + 
-                    '<a href="./addGroups">Przejdź do grup</a>' + 
+        $GTGBtn = $('<a id="go-to-groups" type="button" class="btn btn-default" href="./addGroups">' + 
+                    'Przejdź do grup' + 
                     '<span class="glyphicon glyphicon-forward"></span>' +
-                    '</button>');
+                    '</a>');
 
 
     let sortSHSelect = () => {
@@ -28,34 +28,29 @@ $(() => {
             $('#add-start-list').attr('disabled', 'true'); 
         }
     };
-    $.get('../'+$('#idComp').text()+ '/getReferringHorses/' , (res) => {
-
-        if(res.Klacz || res.Ogier){
+    
+       /* if(res.Klacz || res.Ogier){
             enableBtn(false);
             $goToGroups.addClass('in');
             $goToGroups.text('Te zawody posiadają już dodaną liste startową. Zaktualizuj lub przejdź do grup.');
             $goToGroups.append($GTGBtn);
-        }
-        if(res.Klacz){
-            res.Klacz.forEach((elem) => {
-                $('#selected-horses').append('<option value="' + elem.horse._id + '">'+ elem.startNumber +'.'+elem.horse.name+ ' p:'+elem.horse.gender +'</option>');
-            });
-        }
-        if(res.Ogier){
-            res.Ogier.forEach((elem) => {
-                $('#selected-horses').append('<option value="' + elem.horse._id + '">'+ elem.startNumber +'.'+elem.horse.name+ ' p:'+elem.horse.gender +'</option>');
-            });
-        }
+        }*/
 
-    }).then((res) => {
-        $.get('../'+$('#idComp').text() + '/getAvailableHorses/', (res) => {
-            res.forEach((elem) => {
-                $('#available-horses').append('<option value="' + elem._id + '">' + elem.name + ' p:' + elem.gender + '</option>');
-            });
+
+    $('#search-horse').keyup((e)=>{
+        let val = $(e.target).val(),
+            opt;
+
+        ahSelect.find('option').attr('hidden', true);
+        let foundOpts = ahSelect.find('option').filter(function() { 
+            opt = $(this).text();
+            return opt.substr(0, val.length) === val; 
         });
+        foundOpts.removeAttr('hidden');
+        
     });
 
-    $('#add-btn').click(() => {
+    $('#include-btn').click(() => {
         enableBtn(ahSelect.find(':selected').length);
         ahSelect.find(':selected').each(function(){
             let startN = shSelect.find('option').length+1;

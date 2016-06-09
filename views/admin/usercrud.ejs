@@ -5,7 +5,9 @@
         <title> Uzytkownicy </title>
 
         <script src='../bower_components/jquery/dist/jquery.js'></script>
+        <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
         <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
         <script src="/js/utils.js"></script>
         <script src="/js/usercrud.js"></script>
         <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -17,6 +19,9 @@
 
         <div class="jumbotron">
             <div class="container text-center">
+                <div class="alert alert-danger fade" id='add-alert'>
+
+                </div>
                 <p>Użytkownicy</p>
                 <table class="table table-bordered">
                     <thead>
@@ -27,55 +32,30 @@
                             <th>Imie</th>
                             <th>Nazwisko</th>
                             <th>Rola</th>
-                            <th></th>
-                            <th></th>
+                            <th>Edytuj</th>
+                            <th>Usuń</th>
 
+                        </tr>
+                        <tr>
+                            <th class="text-center"><button id="add-btn" type="submit" class="btn btn-success">Dodaj</button></th>
+                            <th><input id="username" type="text" class="form-control" placeholder="login"></th>
+                            <th><input id="password" type="password" class="form-control" placeholder="haslo"></th>
+                            <th><input id="firstname" type="text" class="form-control" placeholder="imie"></th>
+                            <th><input id="lastname" type="text" class="form-control" placeholder="nazwisko"></th>
+                            <th> 
+                                <select class="form-control" id="role">
+                                    <option>admin</option>
+                                    <option>arbiter</option>
+                                </select>
+                            </th>
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody id="users-tbody">
-                        <tr>
-                            <td class="text-center">
-                                <div class="input-group">
-                                    <button id="add-btn" type="submit" class="btn btn-success">Dodaj</button>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input id="username" type="text" class="form-control" placeholder="login">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input id="password" type="password" class="form-control" placeholder="haslo">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input id="firstname" type="text" class="form-control" placeholder="imie">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input id="lastname" type="text" class="form-control" placeholder="nazwisko">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <select class="form-control" id="role">
-                                        <option>admin</option>
-                                        <option>arbiter</option>
-                                    </select>
-                                </div>
-                            </td>
-
-                            <td></td>
-                            <td></td>
-                        </tr>
+                    <tbody id="users-tbody" class="tbody">
                     </tbody>
                 </table>
-                <div class="alert alert-danger fade" id='add-alert'>
 
-                </div>
             </div>
         </div>
 

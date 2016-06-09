@@ -11,10 +11,13 @@ $(() => {
 
     if(gender.find(':selected').text() === 'Klacz'){
         $('.mares-rows').css({display: 'block'});
+        $('.stallions-rows').css({display: 'none'});
     }
     else{
         $('.stallions-rows').css({display: 'block'});
+        $('.mares-rows').css({display: 'none'});
     }
+
     gender.change(function () {
         let g =$(this).find(':selected').text();
 
@@ -73,13 +76,14 @@ $(() => {
     };
     $('.add-group-btn, .edit-group-btn').click((e) => {
 
-        
+
         let $this = $(e.target).closest('.row'),
             group,
             url = '../' + window.location.pathname.split('/').pop();
 
-        if($this.hasClass('mares-row')){
-              group = createGroups($this, '.group-mares', 'Klacz');
+
+        if($this.hasClass('mare-row')){
+            group = createGroups($this, '.group-mares', 'Klacz');
         }
         else{
             group = createGroups($this, '.group-stallions', 'Ogier');
@@ -111,7 +115,8 @@ $(() => {
 
             let errJson = err.responseJSON,
                 highLightArea,
-                rowGroup = $('#'+errJson.fail.localId);
+                rowGroup = $('#'+errJson.fail.id);
+
 
             $('#alert').removeClass('in').removeClass('alert-success').addClass('alert-danger').text('');
             rowGroup.find('.name-group').animate({'background-color': "white"}, 250);
@@ -119,11 +124,12 @@ $(() => {
             rowGroup.find('.multiple-select').not(":first").animate({'background-color': "white"}, 250);
 
             if(errJson.typeErr){
-
+                
                 if(errJson.typeErr === 'name'){
                     highLightArea = rowGroup.find('.name-group');
                 }
                 else if(errJson.typeErr === 'horses'){
+                 
                     highLightArea = rowGroup.find('.multiple-select').first();
                 }
                 else{

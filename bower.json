@@ -16,6 +16,7 @@
         "jquery": "*",
         "jquery-ui": "*",
         "bootstrap": "*",
+        "bootstrap-multiselect": "*",
         "eonasdan-bootstrap-datetimepicker": "*"
     }
 }

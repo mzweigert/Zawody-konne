@@ -23,11 +23,13 @@ var competitionSchema = mongoose.Schema({
         name: { type: String, required: true },
         startDate: { type: Date, required: true },
         arbitersCount: { type:Number, min: 5, required: true },
-        ratesType: {type: String, required: true}
+        ratesType: {type: String, required: true},
+        started: {type: Boolean, default: false},
     },
     startList:{
         
         referringHorses: [{horse:{type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}, startNumber: Number}],
+        currentVoteHorse: {type: mongoose.Schema.Types.ObjectId, ref: 'Horse'},
         groups: [{
             name: { type: String, required: true },
             gender: { type: String, required: true },

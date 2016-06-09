@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title> Zawody </title>
         <script src='/bower_components/jquery/dist/jquery.js'></script>
+        <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
         <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="/bower_components/moment/min/moment.min.js"></script>
         <script src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
@@ -17,6 +18,8 @@
 
         <div class="jumbotron">
             <div class="container text-center">
+                <div class="alert alert-danger fade" id='add-alert'>
+                </div>
                 <p>Konie</p>
                 <table class="table table-bordered">
                     <thead>
@@ -27,54 +30,43 @@
                             <th>Liczba sędziów</th>
                             <th>Typ oceniania</th>
                             <th>Lista startowa</th>
+                            <th>Edytuj</th>
+                            <th>Usuń</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <button id="add-btn" type="submit" class="btn btn-success">Dodaj</button>
+                            </th>
+                            <th>
+                                <input id="name" type="text" class="form-control" placeholder="nazwa">
+                            </th>
+                            <th class="td-date">
+                                <div class="input-group">
+                                    <input id="start-date" type="text" class="form-control form-date" placeholder="data rozpoczecia">
+                                </div>
+                            </th>
+                            <th>
+                                <input id="arbiters-count" type="number" min="5" class="form-control" placeholder="liczba sedziow">
+                            </th>
+                            <th>
+                                <select class="form-control" id="rates-type">
+                                    <option value="half">połówki</option>
+                                    <option value="all">całe</option>
+                                </select>
+                                <select class="form-control" id="rates-interval">
+                                    <option value="ten">0-10</option>
+                                    <option value="twenty">0-20</option>
+                                </select>
+                            </th>
+                            <th></th>
                             <th></th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="competitions-tbody">
-                        <tr>
-                            <td class="text-center">
-                                <div class="input-group">
-                                    <button id="add-btn" type="submit" class="btn btn-success">Dodaj</button>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input id="name" type="text" class="form-control" placeholder="nazwa">
-                                </div>
-                            </td>
-                            <td class="td-date">
-                                <div class="input-group">
-                                    <input id="start-date" type="text" class="form-control form-date" placeholder="data rozpoczecia">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <input id="arbiters-count" type="number" min="5" class="form-control" placeholder="liczba sedziow">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <select class="form-control" id="rates-type">
-                                        <option value="half">połówki</option>
-                                        <option value="all">całe</option>
-                                    </select>
-                                    <select class="form-control" id="rates-interval">
-                                        <option value="ten">0-10</option>
-                                        <option value="twenty">0-20</option>
-                                    </select>
-                                </div>
-                            </td>
-
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                    <tbody id="competitions-tbody" class="tbody">
                     </tbody>
                 </table>
-                <div class="alert alert-danger fade" id='add-alert'>
-
-                </div>
+                
             </div>
         </div>
 

@@ -103,9 +103,9 @@ router.get('/:id/editGroups', (req,res) =>{
         return res.status(404);
     }
     db.Competition.findById(req.params.id)
-        .populate('startList.groups.horses')
         .populate('startList.referringHorses.horse')
         .populate('startList.groups.arbiters')
+        .populate('startList.groups.horses')
         .exec((err, found) => {
 
         if(err)
@@ -142,14 +142,14 @@ router.get('/:id/editGroups', (req,res) =>{
 
             });
 
-
-            let maresGroups,
-                stallionsGroups,
-                genderHN = _.groupBy(groups, (elem) => {
-                    return elem.gender === 'Ogier' ? 'Ogier' : 'Klacz';
-                });
+            let  genderHN = _.groupBy(groups, (elem) => {
+                return elem.gender === 'Ogier' ? 'Ogier' : 'Klacz';
+            });
 
 
+            genderHN.Ogier.forEach((elem) => {
+               console.log(elem); 
+            });
             res.render('admin/editGroups', { 
                 id: found._id,
                 maresGroups:   genderHN.Klacz? genderHN.Klacz: [],
@@ -192,8 +192,21 @@ router.post('/addGroup', (req, res) => {
             return res.status(400).json(err);
 
         delete group.id;
+        let arrTmp = [];
+        found.startList.groups.forEach((elem) => {
+            arrTmp = arrTmp.concat(elem.horses);
+        });
+        arrTmp = _.filter(group.horses, (elem) => {
+            return _.every(arrTmp, (arrH) => {
+                return elem.toString() !== arrH.toString(); 
+            });
+        });
+
+        if(!arrTmp.length)
+            return res.status(400).json({message:'Grupa zawierająca te konie, została już dodana!', fail: group, typeErr: 'horses'});
 
         found.startList.groups.push(group);
+
         found.save((err) => {
             if(err)
                 res.status(400).json(err);
@@ -236,13 +249,13 @@ router.post('/editGroup', (req, res) => {
         if(err)
             return res.status(400).json(err);
 
-   
+
         db.Competition.update({'startList.groups._id': group.id}, {'$set': {
             'startList.groups.$.name': group.name,
             'startList.groups.$.gender': group.gender,
             'startList.groups.$.arbiters': group.arbiters,
             'startList.groups.$.results': group.results
-            
+
         }}, function(err, done) { 
             if(err)
                 res.status(400).json(err);

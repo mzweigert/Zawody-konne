@@ -9,12 +9,26 @@ $(()=>{
         breeder,
         deleteRow,
         $updateAlert = $('#update-alert'),
+        $alert = $('#alert'),
         $inputsUpdate = $('#inputs-update').children(),
         $tbody = $('#horses-tbody'),
-        $this;
+        $this,
+        createHorse = (horse) => {
+            return {
+                id: horse._id,
+                name: horse.name,
+                gedner: horse.gender,
+                breeder: horse.breeder
+            };
+        };
+
+    $(window).resize(function() {
+        resizeTable($tbody.parent());
+    }).resize();
 
     $.get('./horse/getAllHorses', (response) => {
         makeRowsInTable(response, $tbody);
+        resizeTable($tbody.parent());
     });
 
     $tbody.on('click', '.remove-row', (e) => {
@@ -23,6 +37,7 @@ $(()=>{
     });
     $("#delete-btn").on('click', () => {
 
+        $alert.removeClass('in').text('');
         idHorse = deleteRow.children(0).eq(0).text();
 
         if(typeof null != idHorse && typeof 'undefined' != idHorse ){
@@ -31,11 +46,15 @@ $(()=>{
                 url: './horse/deleteHorse',
                 data: JSON.stringify({ id: idHorse }),
                 type: 'DELETE', 
-                dataType: 'JSON', 
                 contentType: 'application/json',
-
             }).success((res) => {
-                deleteRow.remove();
+               console.log("DUPA");
+                deleteRow.css({'background-color': '#d9534f'});
+                deleteRow.hide(500);
+                window.setTimeout(() => deleteRow.remove(), 500);
+
+            }).error((err) => {
+                 $alert.addClass('in').text(err.responseText);
             });
 
         }
@@ -69,7 +88,6 @@ $(()=>{
             newGender = $inputsUpdate.eq(2).val(),
             newBreeder = $inputsUpdate.eq(3).val();
 
-
         $.ajax({
             url: './horse/updateHorse',
             type: 'PUT',
@@ -84,26 +102,17 @@ $(()=>{
 
         }).success((res) => {
             $('#update-modal').modal('hide');
-
-            let obj = {
-                id: res._id,
-                name: res.name,
-                gedner: res.gender,
-                breeder: res.breeder
-            };
-            updateRow(obj, $this.parent());
-
+            updateRow(createHorse(res), $this.parent());
         }).error((err) => { 
-            $updateAlert.addClass('in');
-            $updateAlert.text(err.responseText); 
+            $updateAlert.addClass('in').text(err.responseText);
         });
 
     });
+
+
     $('#add-btn').click(() => {
 
-        let $addAlert = $('#add-alert');
-        $addAlert.removeClass('in');
-        $addAlert.text('');
+        $alert.removeClass('in').text('');
 
         name = $('#name').val();
         gender = $('#gender').val();
@@ -119,20 +128,14 @@ $(()=>{
                 gender: gender,
                 breeder: breeder
             })
-
         }).success((res) => {
-            let obj = {
-                id: res._id,
-                name: res.name,
-                gedner: res.gender,
-                breeder: res.breeder
-            };
-
-            createRow(obj, $tbody);
+            createRow(createHorse(res), $tbody);
+            $tbody.scrollTop($tbody[0].scrollHeight);
+            $tbody.children().last().css({backgroundColor: '#5cb85c'});
+            $tbody.children().last().animate({backgroundColor: 'transparent'}, 1000);
 
         }).error((err) => { 
-            $addAlert.addClass('in');
-            $addAlert.text(err.responseText); 
+            $alert.addClass('in').text(err.responseText);
         });
     });
 

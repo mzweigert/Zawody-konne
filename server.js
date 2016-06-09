@@ -36,15 +36,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', require('./routes'));
-
-app.use('/bower_components',  express.static(__dirname + '/bower_components'));
-app.use(express.static(__dirname + '/public'));
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
-let server = http.createServer(app);
-let sio = socketIo.listen(server);
+let server = http.createServer(app),
+    io = socketIo.listen(server);
 
 let onAuthorizeSuccess = function (data, accept) {
     console.log('Udane połączenie z socket.io');
@@ -59,7 +52,7 @@ let onAuthorizeFail = function (data, message, error, accept) {
     accept(null, false);
 };
 
-sio.use(passportSocketIo.authorize({
+io.use(passportSocketIo.authorize({
   cookieParser: cookieParser,       // the same cookieParser middleware as registered in express
   key:          sessionKey,         // the name of the cookie storing express/connect session_id
   secret:       sessionSecret,      // the session_secret used to parse the cookie
@@ -68,18 +61,19 @@ sio.use(passportSocketIo.authorize({
   fail:         onAuthorizeFail     // *optional* callback on fail/error
 }));
 
+io.set('log level', 2); // 3 == DEBUG, 2 == INFO, 1 == WARN, 0 == ERROR
+exports.io = io;
 
-sio.set('log level', 2); // 3 == DEBUG, 2 == INFO, 1 == WARN, 0 == ERROR
+//KONIECZNIE MUSI BYC PRZED TYM! BO NIE ZADZIALA!!!
 
-sio.sockets.on('connection', function (socket) {
-    socket.emit('news', {
-        ahoj: 'od serwera'
-    });
-    socket.on('reply', function (data) {
-        console.log(data);
-    });
-});
+app.use('/', require('./routes'));
+app.use('/bower_components', express.static(__dirname + '/bower_components'));
+app.use(express.static(__dirname + '/public'));
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
 
 server.listen(3000, function () {
     console.log('Serwer pod adresem http://localhost:3000/');
 });
+

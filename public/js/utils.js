@@ -10,7 +10,23 @@ let showIfError = (response)=>
 };
 
 
+let resizeTable = (table) => {
 
+    let tCells = table.find('tbody tr').first().children(),
+        thChlds = table.find('thead tr');
+    
+    let colWidth = tCells.map(function() {
+        return $(this).width();
+    }).get();
+
+    thChlds.first().children().each(function(i, v) {
+        $(v).width(colWidth[i]);
+    });   
+    thChlds.last().children().each(function(i, v) {
+        $(v).width(colWidth[i]);
+    });   
+
+};
 let makeRowsInTable = (listOfObject, $tbody) =>
 {
     listOfObject.forEach((elem) => {
@@ -20,10 +36,10 @@ let makeRowsInTable = (listOfObject, $tbody) =>
 };
 
 let createRow = (object, $tbody) => {
-    
-    var $lastTr = $tbody.children().last(),
-        $tr = $('<tr>').insertBefore($lastTr);
+  
+   let $tr = $('<tr>').appendTo($tbody);
 
+    
     object.buttonEdit = buttonEdit;
     object.buttonDelete = buttonDelete;
 
@@ -32,7 +48,8 @@ let createRow = (object, $tbody) => {
         if(key !== '__v')
             createCol(object[key], $tr);
     }
-
+    
+    
 };
 
 let createCol = (value, $tr) => {
@@ -50,9 +67,9 @@ let createCol = (value, $tr) => {
 };
 let updateRow = (object, $tr) => {
 
-   
+
     $tr.children().remove();
- 
+
     object.buttonEdit = buttonEdit;
     object.buttonDelete = buttonDelete;
 
