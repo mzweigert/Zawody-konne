@@ -21,8 +21,8 @@ $(()=>{
         format: 'YYYY-MM-DD HH:mm',
         sideBySide: true,
         keepOpen: true
-  
-   
+
+
     });
     $inputsUpdate.eq(2).datetimepicker({
         format: 'YYYY-MM-DD HH:mm',
@@ -32,11 +32,15 @@ $(()=>{
     $(window).resize(function() {
         resizeTable($tbody.parent());
     }).resize();
-
+    window.setTimeout(() => resizeTable($tbody.parent()), 5);
+    
     let createObj = (elem) => {
-        let ratesInfo = elem.meta.ratesType;
-        let type = ratesInfo.substr(0, ratesInfo.indexOf(' ')),
-            interval = ratesInfo.substr(ratesInfo.indexOf(' ') +1);
+
+        let ratesInfo = elem.meta.ratesType,
+            type = ratesInfo.substr(0, ratesInfo.indexOf(' ')),
+            interval = ratesInfo.substr(ratesInfo.indexOf(' ') +1),
+            started = elem.meta.started;
+
 
         return {
             id: elem._id,
@@ -44,19 +48,13 @@ $(()=>{
             startDate: elem.meta.startDate,
             arbitersCount: elem.meta.arbitersCount,
             ratesType:  $("#rates-type").find('option[value="'+type+'"]').text() + ' ' + $("#rates-interval").find('option[value="'+interval+'"]').text(),
-            startList: '<td><a href="./competition/'+ elem._id+'/startList">Lista startowa</a></td>'
+            startList: '<a href="./competition/'+ elem._id+'/'+ (started? 'results' : 'startList') + '">' +
+            (started? 'Wyniki' : 'Lista startowa') +
+            '</a>'
         };
+
     };
-    $.get('./competition/getAllCompetitions', (response) => {
-        let arr = [];
 
-        response.forEach((elem) => {
-            arr.push(createObj(elem));
-        });
-
-        makeRowsInTable(arr, $tbody);
-        resizeTable($tbody.parent());
-    });
     $tbody.on('click', '.remove-row', (e) => {
 
         deleteRow = $(e.target).closest('tr');
@@ -102,8 +100,10 @@ $(()=>{
         $inputsUpdate.eq(1).val(name);
         $inputsUpdate.eq(2).val(startDate);
         $inputsUpdate.eq(3).val(arbitersCount);
+        
+        ratesType = ratesType.trim().replace('\n', '');
         $inputsUpdate.eq(4).find('option:contains('+ratesType.substr(0, ratesType.indexOf(' '))+')').prop('selected', true);
-        $inputsUpdate.eq(5).find('option:contains('+ratesType.substr(ratesType.indexOf(' ')+1) +')').prop('selected', true);
+        $inputsUpdate.eq(5).find('option:contains('+ratesType.substr(ratesType.indexOf('0')) +')').prop('selected', true);
     });
     $('#update-btn').on('click', () => {
 

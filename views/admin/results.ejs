@@ -3,6 +3,7 @@
     <head>
 
         <script src='/bower_components/jquery/dist/jquery.js'></script>
+        <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
         <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/utils.js"></script>
@@ -12,12 +13,13 @@
     </head>
     <body>
         <div class="jumbotron">
-            <div hidden="true" id="idComp" value="<%= idComp %>"></div>
+            <div hidden="true" id="compId" value="<%= compId %>"></div>
+            <div hidden="true" id="currHorse" value="<%= currentHorse %>"></div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-inline text-center">
                         <div class="form-group text-center">
-                            <button type="button" id="remind-arbiters" class="btn btn-lg btn-success">Upomnij sędziów</button>
+                            <button type="button" id="remind-endEst" class="btn btn-lg btn-success">Upomnij sędziów / Zakończ ocenianie</button>
                         </div>
                         <div class="form-group text-center">
                             <button type="button" id="allow-estimation" class="btn btn-lg btn-success">Zezwól na ocenianie konia</button>
@@ -54,29 +56,63 @@
             </div>
 
         </div>
-        <div class="jumbotron" id="results">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Sędzia</th>
-                        <th>Ogólna</th>
-                        <th>Głowa</th>
-                        <th>Ciało</th>
-                        <th>Nogi</th>
-                        <th>Ruch</th>
-                    </tr>
-                </thead>
-                <tbody id="results-tbody">
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="jumbotron">
+            <div class="text-center">
+                <% groups.forEach((group) => { %>
+                <% group.horses.forEach((horse) => { %>
+                <a style="cursor: pointer;" class="change-item" data-value="<%= horse._id %>"><%= horse.name %></a>
+                <% }); %>
+                <% }); %>
+            </div>
+
+            <div id="carousel" class="carousel slide" data-ride="carousel">
+
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner">
+                    <% groups.forEach((group) => { %>
+                    <% group.horses.forEach((horse) => { %>
+
+                    <div class="item">
+                        <p><%= horse.name %></p>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Sędzia</th>
+                                    <th>Ogólna</th>
+                                    <th>Głowa</th>
+                                    <th>Ciało</th>
+                                    <th>Nogi</th>
+                                    <th>Ruch</th>
+                                </tr>
+                            </thead>
+                            <tbody data-value="<%= horse._id %>">
+                                <% group.arbiters.forEach((arbiter) => { %>
+                                <tr data-value="<%= arbiter._id %>">
+                                    <td><%= arbiter.firstname + ' ' + arbiter.lastname %> </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                                <% }); %>
+                            </tbody>    
+                        </table>
+                    </div>
+                    <% }); %>
+                    <% }); %>
+                </div>
+
+                <!-- Controls -->
+                <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div> <!-- Carousel -->
+
         </div>
     </body>
 </html>

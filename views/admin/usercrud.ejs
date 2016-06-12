@@ -53,6 +53,23 @@
                         </tr>
                     </thead>
                     <tbody id="users-tbody" class="tbody">
+                        <% users.forEach((user) => { %>
+                        <tr>
+                            <td><%= user._id %></td>
+                            <td><%= user.username %></td>
+                            <td><%= user.password %></td>
+                            <td><%= user.firstname %></td>
+                            <td><%= user.lastname %></td>
+                            <td><%= user.role %></td>
+                            <td>
+                                <button type="button" data-toggle="modal" data-target="#update-modal" class="glyphicon glyphicon-edit btn-success update-row" aria-hidden="true">
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" data-toggle="modal" data-target="#delete-modal" class="glyphicon glyphicon-remove btn-danger remove-row" aria-hidden="true"></button>
+                            </td>
+                        </tr>
+                        <% }); %>
                     </tbody>
                 </table>
 

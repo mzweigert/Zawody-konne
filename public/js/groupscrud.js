@@ -3,8 +3,7 @@ $(() => {
 
     let name,
         gender = $('#gender'),
-        gMares = $('.group-mare'),
-        gStallions = $('.group-stallion'),
+        closest,
         gArbiters,
         aArbiters,
         $this;
@@ -41,14 +40,16 @@ $(() => {
     };
     $('.add-btn').click((e) => {
 
-        aArbiters = $(e.target).parent().parent().prev().children().eq(1);
-        gArbiters = $(e.target).parent().parent().next().children().eq(1);
+        closest = $(e.target).closest('.col-sm-2');
+        aArbiters = closest.prev().children().eq(1);
+        gArbiters = closest.next().children().eq(1);
         moveArbiters(aArbiters, gArbiters);
     });
 
     $('.rem-btn').click((e) => {
-        gArbiters = $(e.target).parent().parent().next().children().eq(1);
-        aArbiters = $(e.target).parent().parent().prev().children().eq(1);
+        closest = $(e.target).closest('.col-sm-2');
+        gArbiters = closest.next().children().eq(1);
+        aArbiters = closest.prev().children().eq(1);
         moveArbiters(gArbiters, aArbiters);
     });
 
@@ -100,12 +101,48 @@ $(() => {
             })
         }).success((res) => {
 
+
+            $('.name-group').animate({'background-color': "white"}, 250);
+            $('.multiple-select').first().animate({'background-color': "white"}, 250);
+            $('.multiple-select').not(":first").animate({'background-color': "white"}, 250);
             if(url !== '../editGroups'){
                 $('#alert').removeClass('in').text('');
                 $(e.target).attr('disabled', true);
                 $this.hide(500);
-                window.setInterval(() => $this.remove(), 500);
+                window.setTimeout(() => {
+
+
+                    let sr = $('.stallions-rows'),
+                        mr = $('.mares-rows');
+                    
+                    $this.remove();
+                    if(!mr.children().length && mr.length){
+                        mr.remove();
+                        sr.show('500');
+                        gender.find('option:contains(Klacz)').remove();
+                    }
+                    else if(!sr.children().length && sr.length){
+                        sr.remove();
+                        mr.show('500');
+                        gender.find('option:contains(Ogier)').remove();
+                    }
+
+                    if(!$('.stallions-rows').length && !$('.mares-rows').length){
+
+                        let content = '<p>Grupy zostały już dodane. Przejdź do zawodów lub edytuj grupy</p>' + 
+                            '<div class="form-inline">' + 
+                            '<a type="button" class="btn btn-success" href="./editGroups"> Edycja grup</a>' +
+                            '<a type="button" class="btn btn-success" href="./results"> Wyniki</a>' +
+                            '</div>';
+                        $('.groups').children().remove();
+                        $(content).appendTo('.groups');
+                    }
+
+                }, 500);
+
+
             }else{
+
                 $('.mare-row').animate({backgroundColor: 'white'});
                 $this.animate({backgroundColor: '#95d095'});
                 $('#alert').removeClass('alert-danger').addClass('alert-success in').text('Pomyślnie zaktualizowano grupę');
@@ -124,12 +161,12 @@ $(() => {
             rowGroup.find('.multiple-select').not(":first").animate({'background-color': "white"}, 250);
 
             if(errJson.typeErr){
-                
+
                 if(errJson.typeErr === 'name'){
                     highLightArea = rowGroup.find('.name-group');
                 }
                 else if(errJson.typeErr === 'horses'){
-                 
+
                     highLightArea = rowGroup.find('.multiple-select').first();
                 }
                 else{

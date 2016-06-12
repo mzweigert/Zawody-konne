@@ -35,14 +35,13 @@ var competitionSchema = mongoose.Schema({
             gender: { type: String, required: true },
             horses: [{type: mongoose.Schema.Types.ObjectId, ref: 'Horse', unique: true}],
             arbiters: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true}],
-            results: [{type: mongoose.Schema.Types.ObjectId, ref: 'Result'}]
-
         }]
     }
 
 });
 
 var resultSchema = mongoose.Schema({
+    compId : {type: mongoose.Schema.Types.ObjectId, ref: 'Competition'},
     horseId : {type: mongoose.Schema.Types.ObjectId, ref: 'Horse'},
     arbiterId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     overall: {type:Number},

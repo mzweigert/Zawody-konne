@@ -1,0 +1,32 @@
+ <tr id="<%= result._id %>">
+                                    <td id="<%= result.arbiterId._id %>">
+                                        <%= result.arbiterId.firstname + ' ' + result.arbiterId.lastname %>
+                                    </td>
+                                    <td><%= result.overall? result.overall : '' %></td>
+                                    <td><%= result.head? result.head : '' %></td>
+                                    <td><%= result.body? result.body : '' %></td>
+                                    <td><%= result.legs? result.legs : '' %></td>
+                                    <td><%= result.movement? result.movement : '' %></td>
+                                </tr>
+                                
+                                
+                                <% results.forEach((result) => { %>
+
+                                <tr data-value="<%= arbiter._id %>">
+                                    <td><%= arbiter.firstname + ' ' + arbiter.lastname %></td>
+
+                                    <% if(horse._id.toString() === result.horseId.toString() && result.arbiterId._id.toString() === arbiter._id.toString()){ %>
+
+                                    <td><%= result.overall? result.overall : '' %></td>
+                                    <td><%= result.head? result.head : '' %></td>
+                                    <td><%= result.body? result.body : '' %></td>
+                                    <td><%= result.legs? result.legs : '' %></td>
+                                    <td><%= result.movement? result.movement : '' %></td>
+
+                                    <% } %>
+
+
+
+                                </tr>
+
+                                <% }); %>

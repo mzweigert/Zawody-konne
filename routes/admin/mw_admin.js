@@ -2,6 +2,7 @@
 'use strict';
 
 var express = require('express'),
+    db = require('../../db/database.js'),
     horseManager = require('../../services/horsemanager.js'),
     userManager = require('../../services/usermanager.js'),
     competitionManager = require('../../services/competitionmanager.js'),
@@ -13,7 +14,7 @@ var express = require('express'),
 
 
 router.get('/', (req, res) => {
-    
+
     res.header('Content-Type', 'text/html; charset=utf-8');
     res.render('admin/admin', {
         firstname: req.user.firstname,
@@ -23,17 +24,38 @@ router.get('/', (req, res) => {
 
 router.get('/horse', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
-    res.render('admin/horsecrud');
+    db.Horse.find({}, (err, horses) => {
+        if(err)
+            return res.status(404).send('Nie mozna odnalezc koni');
+        
+         return res.render('admin/horsecrud', { horses });
+    });
+  
 });
 
 router.get('/user', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
-    res.render('admin/usercrud');
+    db.User.find({}, 'username password firstname lastname role', (err, users) => {
+        console.log(users);
+        if(err)
+            return res.status(404).send('Nie mozna odnalezc uzytkownikow');
+        
+         return res.render('admin/usercrud', { users });
+    });
+  
 });
 
 router.get('/competition', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
-    res.render('admin/competitioncrud');
+
+    db.Competition.find({}, 'meta startList', (err, competitions) => {
+        if(err)
+            return res.status(404).send('Nie mozna odnalezc zawodów');
+      
+
+         return res.render('admin/competitioncrud', { competitions });
+    });
+
 });
 
 

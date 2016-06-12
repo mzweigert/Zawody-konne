@@ -21,8 +21,8 @@ router.get('/:id/addGroups', (req,res) =>{
             return res.status(404);
         if(found.startList.referringHorses.length < 3)
             return res.status(404).send('Dodaj listę startową aby zarządzać grupami');
-
-
+        if(found.meta.started)
+            return res.redirect('./results');
 
         let spliteByGroups = (array, arrGroups) => {
 
@@ -114,7 +114,8 @@ router.get('/:id/editGroups', (req,res) =>{
             return res.status(404);
         if(found.startList.referringHorses.length < 3)
             return res.status(404).send('Dodaj listę startową aby zarządzać grupami');
-
+        if(found.meta.started)
+            return res.redirect('./results');
 
         db.User.find({role: 'arbiter'}, (err, arbiters) => {
 
@@ -146,10 +147,6 @@ router.get('/:id/editGroups', (req,res) =>{
                 return elem.gender === 'Ogier' ? 'Ogier' : 'Klacz';
             });
 
-
-            genderHN.Ogier.forEach((elem) => {
-               console.log(elem); 
-            });
             res.render('admin/editGroups', { 
                 id: found._id,
                 maresGroups:   genderHN.Klacz? genderHN.Klacz: [],
@@ -171,7 +168,6 @@ router.post('/addGroup', (req, res) => {
     if(!req.body.id || !group){
         return res.status(404);
     }
-    console.log(group);
     if(group.name.length < 5){
         return res.status(400).json({message:'Nazwa grupy musi miec minimum 5 i maksimum 10 znakow!', fail: group, typeErr: 'name'});
     }

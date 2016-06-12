@@ -16,8 +16,19 @@
         <div class="jumbotron">
             <div class="container text-center groups">
 
-                <p>Edytuj grupy</p>
-                <p type="text" id="idComp" hidden><%= id %></p>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p type="text" id="idComp" hidden><%= id %></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p>Edytuj grupy</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <a type="button" style="width: 300px;" class="btn btn-success" href="./results"> Przejdź do wyników</a>
+                    </div>
+                </div>
+
+
 
 
                 <div class="row">
@@ -91,7 +102,7 @@
 
                 <div class="stallions-rows">
                     <% stallionsGroups.forEach((elem, i) =>{  %>
-                    <div class="row stallion-row" id="SGroup<%=i%>">
+                    <div class="row stallion-row" id="<%= elem._id %>">
                         <div class="col-sm-3">
                             <div class="form-inline">
                                 <label>Nazwa grupy</label>

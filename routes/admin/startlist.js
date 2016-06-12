@@ -22,6 +22,8 @@ router.get('/:id/startList', (req,res) =>{
             return res.status(400).json(err);
         if(!found)
             return res.status(404);
+        if(found.meta.started)
+            return res.redirect('./results');
 
         db.Horse.find({}, (err, horses) => {
             if(err)

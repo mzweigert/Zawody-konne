@@ -16,6 +16,7 @@
         <div class="jumbotron">
             <div class="container text-center groups">
 
+                <% if(maresGroups.length || stallionsGroups.length ) { %>
                 <p>Utwórz grupy</p>
                 <p type="text" id="idComp" hidden><%= id %></p>
 
@@ -35,6 +36,7 @@
                         </select>
                     </div>
                 </div>
+                <% if(maresGroups.length) { %>
                 <div class="mares-rows">
                     <% maresGroups.forEach((elem, i) =>{%>
                     <div class="row mare-row" id="MGroup<%=i%>">
@@ -83,7 +85,8 @@
                     </div>
                     <% });%>
                 </div>
-
+                <% } %>
+                <% if(stallionsGroups.length) { %>
                 <div class="stallions-rows">
                     <% stallionsGroups.forEach((elem, i) =>{  %>
                     <div class="row stallion-row" id="SGroup<%=i%>">
@@ -132,6 +135,14 @@
                     </div>
                     <% });%>
                 </div>
+                <% } %>
+                <% } else { %>
+                <p>Grupy zostały już dodane. Przejdź do zawodów lub edytuj grupy</p>
+                <div class="form-inline">
+                    <a type="button" class="btn btn-success" href="./editGroups"> Edycja grup</a>
+                    <a type="button" class="btn btn-success" href="./results"> Wyniki</a>
+                </div>
+                <% } %>
             </div>
         </div>
 

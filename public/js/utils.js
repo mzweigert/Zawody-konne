@@ -14,7 +14,7 @@ let resizeTable = (table) => {
 
     let tCells = table.find('tbody tr').first().children(),
         thChlds = table.find('thead tr');
-    
+
     let colWidth = tCells.map(function() {
         return $(this).width();
     }).get();
@@ -35,21 +35,23 @@ let makeRowsInTable = (listOfObject, $tbody) =>
     });
 };
 
-let createRow = (object, $tbody) => {
-  
-   let $tr = $('<tr>').appendTo($tbody);
+let createRow = (object, $tbody, addBtns) => {
 
-    
-    object.buttonEdit = buttonEdit;
-    object.buttonDelete = buttonDelete;
+    let $tr = $('<tr>').appendTo($tbody);
+
+    if(addBtns || addBtns === undefined){
+        object.buttonEdit = buttonEdit;
+        object.buttonDelete = buttonDelete;
+    }
 
     for(let key in object){
 
         if(key !== '__v')
             createCol(object[key], $tr);
     }
-    
-    
+
+    return $tr;
+
 };
 
 let createCol = (value, $tr) => {

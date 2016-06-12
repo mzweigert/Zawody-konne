@@ -64,9 +64,34 @@
                         </tr>
                     </thead>
                     <tbody id="competitions-tbody" class="tbody">
+                        <% competitions.forEach((competition) => { %>
+                        <tr>
+                            <% var rT = competition.meta.ratesType; %>
+                            <td><%= competition._id %></td>
+                            <td><%= competition.meta.name %></td>
+                            <td><%= competition.meta.startDate %></td>
+                            <td><%= competition.meta.arbitersCount %></td>
+                            <td>
+                                <%= rT.substr(0, rT.indexOf(' ')) === 'half'? 'połówki' : 'całe'  %>
+                                <%= rT.substr(rT.indexOf(' ')) === 'ten'? '0-10' : '0-20'  %>
+                            </td>
+                            <td>
+                                <a href="./competition/<%= competition._id %>/<%= competition.meta.started? 'results' : 'startList'%>">
+                                    <% //competition.meta.started? %> Wyniki <% //: %> Lista startowa
+                                </a>
+                            </td>
+                            <td>
+                                <button type="button" data-toggle="modal" data-target="#update-modal" class="glyphicon glyphicon-edit btn-success update-row" aria-hidden="true">
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" data-toggle="modal" data-target="#delete-modal" class="glyphicon glyphicon-remove btn-danger remove-row" aria-hidden="true"></button>
+                            </td>
+                        </tr>
+                        <% }); %>
                     </tbody>
                 </table>
-                
+
             </div>
         </div>
 

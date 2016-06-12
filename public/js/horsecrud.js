@@ -22,17 +22,12 @@ $(()=>{
             };
         };
 
+    window.setTimeout(() => resizeTable($tbody.parent()), 5);
     $(window).resize(function() {
         resizeTable($tbody.parent());
     }).resize();
-
-    $.get('./horse/getAllHorses', (response) => {
-        makeRowsInTable(response, $tbody);
-        resizeTable($tbody.parent());
-    });
-
+    
     $tbody.on('click', '.remove-row', (e) => {
-
         deleteRow = $(e.target).closest('tr');
     });
     $("#delete-btn").on('click', () => {
@@ -48,13 +43,13 @@ $(()=>{
                 type: 'DELETE', 
                 contentType: 'application/json',
             }).success((res) => {
-               console.log("DUPA");
+                console.log("DUPA");
                 deleteRow.css({'background-color': '#d9534f'});
                 deleteRow.hide(500);
                 window.setTimeout(() => deleteRow.remove(), 500);
 
             }).error((err) => {
-                 $alert.addClass('in').text(err.responseText);
+                $alert.addClass('in').text(err.responseText);
             });
 
         }
@@ -138,5 +133,7 @@ $(()=>{
             $alert.addClass('in').text(err.responseText);
         });
     });
+    
+       //resizeTable($tbody.parent());
 
 });

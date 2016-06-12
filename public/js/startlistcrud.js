@@ -29,13 +29,6 @@ $(() => {
         }
     };
     
-       /* if(res.Klacz || res.Ogier){
-            enableBtn(false);
-            $goToGroups.addClass('in');
-            $goToGroups.text('Te zawody posiadają już dodaną liste startową. Zaktualizuj lub przejdź do grup.');
-            $goToGroups.append($GTGBtn);
-        }*/
-
 
     $('#search-horse').keyup((e)=>{
         let val = $(e.target).val(),

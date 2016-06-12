@@ -30,16 +30,9 @@ $(()=>{
     $(window).resize(function() {
         resizeTable($tbody.parent());
     }).resize();
-
-    $.get('./user/getAllUsers', (response) => {
-        let userArr = [];
-        response.forEach((elem) => {
-            userArr.push(createObj(elem));
-        });
-        makeRowsInTable(userArr, $tbody);
-        resizeTable($tbody.parent());
-    });
-
+    
+    window.setTimeout(() => resizeTable($tbody.parent()), 5);
+    
     $tbody.on('click', '.remove-row', (e) => {
 
         deleteRow = $(e.target).closest('tr');
@@ -152,8 +145,7 @@ $(()=>{
             $tbody.children().last().css({backgroundColor: '#5cb85c'});
             $tbody.children().last().animate({backgroundColor: 'transparent'}, 1000);
         }).error((err) => {
-            $addAlert.text(err.responseText);
-            $addAlert.addClass('in');
+            $addAlert.addClass('in').text(err.responseText);
         });
     });
 

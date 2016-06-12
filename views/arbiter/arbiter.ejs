@@ -17,15 +17,16 @@
 
     </head>
     <body>
+
         <div class="jumbotron">
-            <div id="arbiter-panel" style="<% if(currentHorse){ %> display: block; <% } else { %> display: none; <% } %>">
-                <div hidden="true" id="idArbiter" value="<%= id %>">></div>
-                <div hidden="true" id="idResult" value="<%= result? result._id : null %>"></div>
-                <div hidden="true" id="idComp" value="<%= idComp %>">></div>
-                <div hidden="true" id="idHorse" <% if(currentHorse){ %> value="<%= currentHorse.horse._id %>" <% } %>></div>
-                <div hidden="true" id="ratesInfo" value="<%= ratesType %>"></div>
+            <div id="arbiter-panel" style="<% if(result.horseId){ %> display: block; <% } else { %> display: none; <% } %>">
+                <div hidden="true" id="resultId" value="<%= result._id %>"></div>
+                <div hidden="true" id="compId" value="<%= result.compId %>">></div>
+                <div hidden="true" id="arbiterId" value="<%= result.arbiterId %>"></div>
+                <div hidden="true" id="horseId" value="<%= result.horseId? result.horseId.horse : 'undefined' %>"></div>
+                <div hidden="true" id="ratesInfo" value="<%= result.ratesType %>"></div>
                 <h3 style="margin-left: 20px;" id="horseDesc">
-                    <% if(currentHorse){ %> Nr. startowy:  <%= currentHorse.startNumber %> <% } %>
+                    <% if(result.horseId){ %> Nr. startowy:  <%= result.horseId.startNumber %> <% } %>
                 </h3>
                 <div><% result %></div>
                 <div class="row">
@@ -36,7 +37,7 @@
                         <div id="overall" class="slider"></div>
                     </div>
                     <div class="col-sm-2">
-                        <h3 class="result"><%= result? result.overall : 0 %></h3>
+                        <h3 class="result"><%= !isNaN(result.overall)? result.overall : 'n. o.' %></h3>
                     </div>
                 </div>
                 <div class="row">
@@ -47,7 +48,7 @@
                         <div id="head" class="slider"></div>
                     </div>
                     <div class="col-sm-2">
-                        <h3 class="result"><%= result? result.head : 0 %></h3>
+                        <h3 class="result"><%= !isNaN(result.head)? result.head : 'n. o.' %></h3>
                     </div>
                 </div>
                 <div class="row">
@@ -58,7 +59,7 @@
                         <div id="body" class="slider"></div>
                     </div>
                     <div class="col-sm-2">
-                        <h3 class="result"><%= result? result.body : 0 %></h3>
+                        <h3 class="result"><%= !isNaN(result.body)? result.body : 'n. o.' %></h3>
                     </div>
                 </div>
                 <div class="row">
@@ -69,7 +70,7 @@
                         <div id="legs" class="slider"></div>
                     </div>
                     <div class="col-sm-2">
-                        <h3 class="result"><%= result? result.legs : 0 %></h3>
+                        <h3 class="result"><%= !isNaN(result.legs)? result.legs : 'n. o.' %></h3>
                     </div>
                 </div>
                 <div class="row">
@@ -80,15 +81,15 @@
                         <div id="movement" class="slider"></div>
                     </div>
                     <div class="col-sm-2">
-                        <h3 class="result"><%= result? result.movement : 0 %></h3>
+                        <h3 class="result"><%= !isNaN(result.movement)? result.movement : 'n. o.' %></h3>
                     </div>
                 </div>
             </div>
 
-            <h1 class="text-center" id="no-curr-horse" style="<% if(currentHorse){ %> display: none; <% } else { %> display: block; <% } %>">
+            <h1 class="text-center" id="no-curr-horse" style="<% if(result.horseId){ %> display: none; <% } else { %> display: block; <% } %>">
                 Nie oceniasz aktualnie żadnego konia.
             </h1>
-
+            <div style="margin-top: 5%;" class="alert alert-danger fade text-center" id='alert'></div>
         </div>
     </body>
 </html>
