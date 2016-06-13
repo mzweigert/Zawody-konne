@@ -29,6 +29,12 @@ $(() => {
             $('.stallions-rows').show('500');
         }
     });
+
+    $('.drag').draggable({
+        containment: $(this).closest('.mares-rows'),
+        helper: 'clone'
+    });
+
     let moveArbiters = (from, to) =>{
 
 
@@ -114,7 +120,7 @@ $(() => {
 
                     let sr = $('.stallions-rows'),
                         mr = $('.mares-rows');
-                    
+
                     $this.remove();
                     if(!mr.children().length && mr.length){
                         mr.remove();

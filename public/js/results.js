@@ -15,15 +15,16 @@ $(()=> {
         let trArb = $('tbody[data-value="'+ result.horseId + '"]').find('tr[data-value="'+ result.arbiterId._id +'"]');
         trArb.children().remove();
         $('<td>'+ result.arbiterId.firstname + ' ' + result.arbiterId.lastname +'</td>').appendTo(trArb);
-        $('<td>'+ (!isNaN(result.overall)? result.overall : 'n.o.')  +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.type)? result.type : 'n.o.')  +'</td>').appendTo(trArb);
         $('<td>'+ (!isNaN(result.head)? result.head : 'n.o.') +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.neck)? result.neck : 'n.o.')  +'</td>').appendTo(trArb);
         $('<td>'+ (!isNaN(result.body)? result.body : 'n.o.') +'</td>').appendTo(trArb);
         $('<td>'+ (!isNaN(result.legs)? result.legs : 'n.o.') +'</td>').appendTo(trArb);
         $('<td>'+ (!isNaN(result.movement)? result.movement : 'n.o.') +'</td>').appendTo(trArb);
     };
 
     carousel.carousel({
-        interval: 30000000000000000000000
+        interval: false
     });
 
     $('.change-item').click((e) => {
@@ -33,7 +34,8 @@ $(()=> {
     });
 
     window.setTimeout(() => {
-        if(currHorse !== 'undefined'){
+
+        if(currHorse !== 'undefined' && currHorse){
 
             let opt = $('option[value="'+currHorse+'"]');
             opt.parent().show();
@@ -59,12 +61,8 @@ $(()=> {
     sGroup.change((e)=> {
         let $this = $(e.target),
             idGr = $this.find(':selected').attr('value');
-
-
         $('.select-horse').hide(0).find(':selected').removeAttr('selected');
         $('#' + idGr).show('slide', {direction: 'right'}, 200);
-
-
     });
 
     $('#remind-endEst').click((e) => {
@@ -78,26 +76,20 @@ $(()=> {
             return;
         }
 
-        $('.select-horse').attr('disabled', true);
-        $('.select-group').attr('disabled', true);
-
         socket.emit('setCurrHorse', {
             compId: compId, 
             horseId: horseId
         });
     });
 
-    socket.on('setCurrHorse-' + compId, (horseId) => {
-        if(horseId){
-            let tbody = $('tbody[data-value="'+ horseId + '"]');
+    socket.on('setCurrHorse-' + compId, (data) => {
 
-            tbody.children().each((i, v) => {
-                $(v).children().not(':first').each((i, v) => {
-                    $(v).text('n.o.');
-                });
-            });
+        if(data.horseToSet){
+            let tbody = $('tbody[data-value="'+ data.horseToSet + '"]');
 
-            $(currHorse).attr('value', horseId);
+            $('.select-horse').attr('disabled', true);
+            $('.select-group').attr('disabled', true);
+            $(currHorse).attr('value', data.horseToSet);
             carousel.carousel(tbody.closest('.item').index());
         }
         else {
@@ -116,6 +108,12 @@ $(()=> {
         addResult(res);
     });
 
+    socket.on('endComp-' + compId, (res) => {
+        $('#control-panel').first().hide(500, ()=> {
+             $('#control-panel').remove();
+        });
+        $('#results').prepend('<p class="text-center">Zawody skończone!</p>');
+    });
 
 
 });

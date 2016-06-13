@@ -10,6 +10,9 @@ var express = require("express"),
 
 
 
+let checkAvailableArbiters = (endCallback, res, meta) => {
+
+};
 
 router.get('/getAllCompetitions', (req, res) => {
 
@@ -32,27 +35,69 @@ router.post('/addCompetitionMeta', (req, res) => {
     }
     if(!meta.name ||
        !meta.startDate ||
+       !meta.startHour ||
        !meta.arbitersCount ||
        !meta.ratesType){
-
         return res.status(400).send("Uzupełnij pola!");
     }
-    if(meta.arbitersCount < 5){
+    if(meta.arbitersCount < 5 || meta.arbitersCount > 9 ){
         return res.status(400).send("Liczba sędziów powinna wynosić minimum 5!");
     }
 
-    let competition = new db.Competition({
-        meta: meta
-    });
+    async.waterfall([
+        (callback) => {
+            db.Competition.find({
+                'meta.startDate': meta.startDate
+            }, 'startList', (err, comps) => {
 
-    competition.save((err) => {
-        if(err)
-            res.status(400).json(err);
-        else
-            res.status(200).json(competition);  
-    });
+                let arbComps = [];
+                comps.forEach((comp) => {
+                    comp.startList.groups.forEach((group) => {
+                        arbComps = arbComps.concat(group.arbiters); 
+                    });
+                });
+                arbComps = _.uniq(arbComps, (item, key, horse) => { 
+                    return item;
+                });
+                callback(null, arbComps);
+                console.log(arbComps.length);
+            });
+
+        },
+        (arbComps, callback) => {
+
+            db.User.find({'role' : 'arbiter'}, (err, arbiters) => {
+
+                let availArb = _.filter(arbiters, (arb) => {
+                    return !_.find(arbComps, (arbComp) =>{
+                        return arb._id.toString() === arbComp.toString();
+                    });
+                });
+
+                if(availArb.length < meta.arbitersCount){
+                    return res.status(400).send("Ilość dostępnych sedziów równa " + availArb.length + ' w tym dniu jest za mała aby stworzyć grupy. Liczba sędziów musi wynosić ' + meta.arbitersCount + '. Zmień dzień.');
+                }
+                else{
+                    callback(null);
+                }
+
+            });
+        }, 
+        (callback) => {
+            let competition = new db.Competition({
+                meta: meta
+            });
+
+            competition.save((err) => {
+                if(err)
+                    res.status(400).json(err);
+                else
+                    res.status(200).json(competition);  
+            });
+        }]);
 
 });
+
 router.put('/updateCompetitionMeta', (req, res) => {
 
     let meta = req.body.meta;
@@ -68,24 +113,87 @@ router.put('/updateCompetitionMeta', (req, res) => {
 
         return res.status(400).send("Uzupełnij pola!");
     }
-    if(meta.arbitersCount < 5){
-        return res.status(400).send("Liczba sędziów powinna wynosić minimum 5!");
+    if(meta.arbitersCount < 5 || meta.arbitersCount > 9 ){
+        return res.status(400).send("Liczba sędziów musi wynosić od 5 do 9!");
     }
 
-    db.Competition.findById(meta.id, (err, found) => {
+    async.waterfall([
+        (callback) => {
+            db.Competition.findById(meta.id)
+                .populate('startList.groups.arbiters')
+                .exec((err, found) => {
 
-        if(err)
-            return res.status(400).json(err);
+                if(err)
+                    return res.status(400).json(err);
 
-        found.meta = meta;
-        found.save((err) => {
-            if(err)
-                res.status(400).json(err);
-            else
-                res.status(200).json(found); 
-        });
+                if(found.meta.started)
+                    return res.status(400).send('Nie można edytowac zawodów, które już się rozpoczeły.');
 
-    });
+                callback(null, found);
+
+            });
+        },
+        (comp, callback) => {
+            db.Competition.find({
+                'meta.startDate': meta.startDate
+            }, 'startList', (err, comps) => {
+
+                let arbComps = [];
+                comps.forEach((comp) => {
+                    comp.startList.groups.forEach((group) => {
+                        arbComps = arbComps.concat(group.arbiters); 
+                    });
+                });
+                arbComps = _.uniq(arbComps, (item, key, horse) => { 
+                    return item;
+                });
+
+                callback(null, comp, arbComps);
+
+            });
+
+        },
+        (comp, arbComps, callback) => {
+
+            db.User.find({'role' : 'arbiter'}, (err, arbiters) => {
+
+                let availArbDay = _.filter(arbiters, (arb) => {
+                    return !_.find(arbComps, (arbComp) =>{
+                        return arb._id.toString() === arbComp.toString();
+                    });
+                });
+
+                let arbInGroups = [];
+
+                comp.startList.groups.forEach((group) => {
+                    arbInGroups = arbInGroups.concat(group.arbiters);
+                });
+                arbInGroups = _.uniq(arbInGroups, (item, key, horse) => { 
+                    return item;
+                });
+
+                availArbDay = availArbDay.concat(arbInGroups);
+
+                if(availArbDay.length < meta.arbitersCount){
+                    return res.status(400).send("Ilość dostępnych sedziów równa " + availArbDay.length + ' w tym dniu jest za mała aby stworzyć grupy. Liczba sędziów musi wynosić ' +meta.arbitersCount + '. Zmień dzień.');
+                }
+                else{
+
+                    comp.meta = meta;
+                    comp.startList.groups = [];
+                    comp.save((err) => {
+                        if(err)
+                            res.status(400).json(err);
+                        else
+                            res.status(200).json(comp);  
+                    });
+
+                }
+
+            });
+        }, 
+    ]);
+
 });
 
 router.post('/updateCurrentHorse', (req, res) => {
@@ -164,104 +272,5 @@ router.delete('/deleteCompetition', (req, res) => {
     });
 });
 
-/*
-io.on('connection', function (socket) {
-
-    let user = socket.request.user;
-
-    if(user.role === 'admin'){
-        socket.on('updCurrHor', function (data) {
-            async.waterfall([
-                function(callback) {
-                    db.Competition.findById(
-                        data.idComp, 
-                        'startList',
-                        (err, found) => {
-
-                            if(!found){
-                                socket.emit('err', { err: 'Nie znaleziono zawodów!', status: 404});
-                                return;
-                            }
-                            callback(null, found);
-
-                        });
-                },
-                function(comp, callback) {
-
-                    db.Horse.findById(data.idHorse, (err, found) => {
-                        if(err){
-                            socket.emit('err', { err: err, status: 400});
-                            return;
-                        }
-                        if(!found){
-                            socket.emit('err', { err: 'Nie znaleziono konia!', status: 404});
-                            return;
-                        }
-                        if(!comp.meta.started)
-                            comp.meta.started = true;
-
-                        comp.startList.currentVoteHorse = found;
-                        callback(null, comp);
-
-
-                    });
-                },function(comp, callback) {
-                    comp.save((err, saved) => {
-                        if(err){
-                            socket.emit('err', { err: err, status: 400});
-                            return;
-                        }
-                        if(!saved){
-                            socket.emit('err', { err: 'Nie znaleziono konia!', status: 404});
-                            return;
-                        }
-                        socket.broadcast.emit('startVote', true);
-                    });
-
-                }]);
-        });
-
-    } else {
-        socket.on('startVote', () => {
-            db.Competition.findOne({
-                'meta.started': true,
-                'startList.groups.arbiters': user._id })
-                .populate('startList.referringHorses.horse')
-                .exec((err, found) => {
-                if(err){
-                    socket.emit('err', { err: err, status: 400});
-                    return;
-                }
-                if(!found){
-                    socket.emit('err', { err: 'Nie znaleziono konia!', status: 404});
-                    return;
-                }
-
-                let o = _.filter(found.startList.groups, function(group){
-                    return _.find(group.arbiters, (arb) => {
-                        return arb.toString() === user._id.toString();
-                    });
-                });
-                o = _.find(o, (group) => {
-                    return _.find(group.horses, (horse) => {
-                        return horse.toString() === found.startList.currentVoteHorse.toString();
-                    });
-                });
-                if(!o){
-                    socket.emit('currentHorse', { err: 'Nie oceniasz teraz żadnego konia.', status: 404});
-                    return;
-                }
-
-                o = _.find(found.startList.referringHorses, (elem) => {
-
-                    return elem.horse._id.toString() === found.startList.currentVoteHorse.toString();
-                });
-
-                socket.emit('currentHorse', o);
-            });
-        });
-
-    }
-});*/
 module.exports = router;
 

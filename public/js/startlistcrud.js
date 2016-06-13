@@ -8,13 +8,14 @@ $(() => {
         $GTGBtn = $('<a id="go-to-groups" type="button" class="btn btn-default" href="./addGroups">' + 
                     'Przejdź do grup' + 
                     '<span class="glyphicon glyphicon-forward"></span>' +
-                    '</a>');
+                    '</a>'),
+        ColorArrMare = ["Aquamarine","Bisque","Blue","BlueViolet","Brown","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightSalmon","LightSeaGreen","LightSkyBlue", "Tan","Teal"],
+        ColorArrStall = ["LightSteelBlue","Lime","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightPink","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
 
 
     let sortSHSelect = () => {
         shSelect.children().each(function(e){
             $this = $(this);
-            console.log($this.text().substring(2, $this.text().length));
             $this.text(e+1 +'.'+ $this.text().substring($this.text().indexOf('.') +1, $this.text().length));
         });
     };
@@ -28,7 +29,7 @@ $(() => {
             $('#add-start-list').attr('disabled', 'true'); 
         }
     };
-    
+
 
     $('#search-horse').keyup((e)=>{
         let val = $(e.target).val(),
@@ -40,10 +41,42 @@ $(() => {
             return opt.substr(0, val.length) === val; 
         });
         foundOpts.removeAttr('hidden');
-        
+
     });
 
+    let markGroup = (options,  colorArr, i) => {
+
+        let k = options.length;
+
+        if(!k || k === 1 || k === 2)
+            return;
+        if(!i)
+            i = 0;
+
+        if(k % 5 === 0){
+            $(options.splice((k - 5), 5)).css({backgroundColor: colorArr[i]});
+            return markGroup(options.splice(0 , k - 5), colorArr, ++i);
+        }else if(k % 4 === 0){
+            $(options.splice((k - 4), 4)).css({backgroundColor: colorArr[i]});
+            return markGroup( options.splice(0 , k - 4), colorArr, ++i);
+        }else if(k % 3 === 0){
+
+            $(options.splice((k - 3), 3)).css({'background-color': colorArr[i]});
+            return markGroup(options.splice(0 , k - 3), colorArr, ++i);
+        }else if(k % 3 === 1){
+            $(options.splice((k - 4), 4)).css({backgroundColor: colorArr[i]});
+            return markGroup(options.splice(0 , k - 4), colorArr, ++i);
+        }
+        else{
+            $(options.splice((k - 3), 3)).css({backgroundColor: colorArr[i]});
+            return markGroup(options.splice(0 , k - 5), colorArr, ++i);
+        }
+
+    };
+    markGroup(shSelect.find('option:contains("Klacz")').toArray(), ColorArrMare);
+    markGroup(shSelect.find('option:contains("Ogier")').toArray(), ColorArrStall);
     $('#include-btn').click(() => {
+
         enableBtn(ahSelect.find(':selected').length);
         ahSelect.find(':selected').each(function(){
             let startN = shSelect.find('option').length+1;
@@ -51,6 +84,8 @@ $(() => {
             $(this).remove();
         });
 
+        markGroup(shSelect.find('option:contains("Klacz")').toArray(), ColorArrMare);
+        markGroup(shSelect.find('option:contains("Ogier")').toArray(), ColorArrStall);
     });
 
     $('#remove-btn').click(() => {
@@ -63,6 +98,8 @@ $(() => {
         });
 
         sortSHSelect();
+        markGroup(shSelect.find('option:contains("Klacz")').toArray(), ColorArrMare);
+        markGroup(shSelect.find('option:contains("Ogier")').toArray(), ColorArrStall);
     });
 
     $('#move-up').click(() => { 
@@ -72,6 +109,9 @@ $(() => {
             $this.prev().before($this);
         });
         sortSHSelect();
+
+        markGroup(shSelect.find('option:contains("Klacz")').toArray(), ColorArrMare);
+        markGroup(shSelect.find('option:contains("Ogier")').toArray(), ColorArrStall);
     });
 
     $('#move-down').click(() => { 
@@ -81,6 +121,9 @@ $(() => {
             $this.next().after($this);
         });
         sortSHSelect();
+
+        markGroup(shSelect.find('option:contains("Klacz")').toArray(), ColorArrMare);
+        markGroup(shSelect.find('option:contains("Ogier")').toArray(), ColorArrStall);
     });
 
     $('#add-start-list').click(() => { 
@@ -113,7 +156,7 @@ $(() => {
                 res.horsesNotAdded.forEach((elem) => {
                     let option = shSelect.find('option[value="' + elem.horse +'"]');
                     option.text(option.text().substring(2));
-                    ahSelect.append(option.clone());
+                    ahSelect.append(option.clone().css({'background-color' : 'transparent'}));
                     option.remove();
                 });
                 $goToGroups.text('Lista startowa zedytowana, lecz nie dodano wszystkich koni. Sprawdź ikonę informacji.');

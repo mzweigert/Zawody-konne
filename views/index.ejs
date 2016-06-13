@@ -3,40 +3,67 @@
     <head>
         <title><%= title %></title>
         <script src='../bower_components/jquery/dist/jquery.js'></script>
+        <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
         <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="/js/index.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/waist.js"></script>
         <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="css/waist.css">
     </head>
     <body>
         Zaloguj się
-        <a href="/login" class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></a>
+        <a id="login-page" href="/login" class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></a>
         <div class="waist-area">
             <div class="jumbotron text-center">
                 <p><%= title %></p>
 
                 <div class="container text-center">
+                    <% if(competitions.length) { %>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>Nazwa zawodów</th>
                                 <th>Data rozpoczęcia</th>
                                 <th>Liczba sędziów</th>
+                                <th>Typ oceny</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody">
-                        <tbody>
+
+                        <tbody id="competitions">
+
                             <% competitions.forEach((elem) => {%>
-                            <tr>
-                                <td><a href="/competition/<%= elem._id %>"><%= elem.meta.name %></a></td>
-                                <td><%= elem.meta.startDate %></td>
-                                <td><%= elem.meta.arbittersCount %></td>
+                            <tr data-value="<%= elem._id %>">
+                                <td><%= elem.meta.name %></td>
+                                <td><%= elem.meta.startDate + ' ' + elem.meta.startHour%></td>
+                                <td><%= elem.meta.arbitersCount %></td>
+                                <td>
+                                    <%= elem.meta.ratesType.substr(0, elem.meta.ratesType.indexOf(' ')) === 'half'? 'połówki' : 'całe'  %>
+                                    <%= elem.meta.ratesType.substr(elem.meta.ratesType.indexOf(' ')+1) === 'ten'? '0-10' : '0-20'  %>
+                                </td>
                             </tr>
                             <% }); %>
+                        </tbody>
+                    </table>
+                    <% } else { %>
+                    <h3>Brak Zawodów do wyswietlenia</h3>
+                    <% } %>
+
+                </div>
+            </div>
+            <div class="jumbotron text-center" id="groups-jumbo" style="display:none;">
+                <div class="container text-center">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nazwa grupy</th>
+                                <th>Płeć</th>
+                                <th>Liczba Koni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groups">
 
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>

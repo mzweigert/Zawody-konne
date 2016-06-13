@@ -21,10 +21,13 @@ var horseSchema = mongoose.Schema({
 var competitionSchema = mongoose.Schema({
     meta: {
         name: { type: String, required: true },
-        startDate: { type: Date, required: true },
+        startDate: { type: String, required: true },
+        startHour: { type: String, required: true},
         arbitersCount: { type:Number, min: 5, required: true },
         ratesType: {type: String, required: true},
         started: {type: Boolean, default: false},
+        finished: {type: Boolean, default: false},
+
     },
     startList:{
         
@@ -44,8 +47,9 @@ var resultSchema = mongoose.Schema({
     compId : {type: mongoose.Schema.Types.ObjectId, ref: 'Competition'},
     horseId : {type: mongoose.Schema.Types.ObjectId, ref: 'Horse'},
     arbiterId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    overall: {type:Number},
+    type: {type:Number},
     head: {type:Number},
+    neck: {type:Number},
     body: {type:Number},
     legs: {type:Number},
     movement: {type:Number}

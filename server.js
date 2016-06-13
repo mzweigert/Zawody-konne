@@ -1,10 +1,11 @@
 /* jshint node: true, esnext: true */
 'use strict';
-let http = require('http'),
+let https = require('https'),
     express = require('express'),
+    fs = require('fs'),
     flash = require('express-flash'),
     app = express(),
-    
+
 
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
@@ -36,7 +37,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-let server = http.createServer(app),
+let server = https.createServer({
+    key: fs.readFileSync('./ssl/key.pem'),
+    cert: fs.readFileSync('./ssl/server.crt')
+}, app),
     io = socketIo.listen(server);
 
 let onAuthorizeSuccess = function (data, accept) {
@@ -53,12 +57,12 @@ let onAuthorizeFail = function (data, message, error, accept) {
 };
 
 io.use(passportSocketIo.authorize({
-  cookieParser: cookieParser,       // the same cookieParser middleware as registered in express
-  key:          sessionKey,         // the name of the cookie storing express/connect session_id
-  secret:       sessionSecret,      // the session_secret used to parse the cookie
-  store:        sessionStore,       // sessionstore – should not be memorystore!
-  success:      onAuthorizeSuccess, // *optional* callback on success
-  fail:         onAuthorizeFail     // *optional* callback on fail/error
+    cookieParser: cookieParser,       // the same cookieParser middleware as registered in express
+    key:          sessionKey,         // the name of the cookie storing express/connect session_id
+    secret:       sessionSecret,      // the session_secret used to parse the cookie
+    store:        sessionStore,       // sessionstore – should not be memorystore!
+    success:      onAuthorizeSuccess, // *optional* callback on success
+    fail:         onAuthorizeFail     // *optional* callback on fail/error
 }));
 
 io.set('log level', 2); // 3 == DEBUG, 2 == INFO, 1 == WARN, 0 == ERROR
@@ -73,7 +77,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 
-server.listen(3000, function () {
+server.listen(3000, () => {
     console.log('Serwer pod adresem http://localhost:3000/');
 });
 

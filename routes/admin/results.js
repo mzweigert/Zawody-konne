@@ -32,11 +32,19 @@ router.get('/:id/results', (req,res) =>{
             return res.redirect('./startList');
         if(lenHorGr !== found.startList.referringHorses.length)
             return res.redirect('./addGroups');
+        if(found.meta.finished){
+            return res.render('admin/results', {
+                compId: found._id,
+                groups: found.startList.groups,
+                finished: true
+            });  
+        }
 
-        res.render('admin/results', {
+        return res.render('admin/results', {
             compId: found._id,
             groups: found.startList.groups,
             currentHorse: found.startList.currentVoteHorse,
+            finished: false
         });  
 
 
@@ -142,11 +150,27 @@ io.on('connection', (socket) => {
                                 socket.emit('err', { err: 'Nie możesz już zmienić akutalnie ocenianego konia!', status: 400});
                                 return;
                             }
+                            if(found.meta.finished){
+                                socket.emit('err', { err: 'Zawody skończone!', status: 400});
+                                return;
+                            }
 
                             callback(null, found);
                         });
                 },
                 (comp, callback) => {
+                    db.Result.find({compId: data.compId, horseId: data.horseId}, (err, results) => {
+                        if(results.length) {
+                            socket.emit('err', { err: 'Ten koń został już oceniony!', status: 400});
+                            return;
+                        }else {
+                            callback(null, comp);
+                        }
+                    });
+
+                },
+                (comp, callback) => {
+
                     db.Horse.findById(data.horseId, (err, found) => {
                         if(err){
                             socket.emit('err', { err: err, status: 400});
@@ -160,11 +184,13 @@ io.on('connection', (socket) => {
                             comp.meta.started = true;
 
                         comp.startList.currentVoteHorse = found;
-                        socket.emit('setCurrHorse-'+comp._id, found._id );
+                        socket.emit('setCurrHorse-'+comp._id, { horseToSet: found._id }  );
                         callback(null, comp);
 
                     });
-                },(comp, callback) => {
+
+                },
+                (comp, callback) => {
 
                     comp.save((err, saved) => {
 
@@ -207,6 +233,23 @@ io.on('connection', (socket) => {
                         return elem.horse.toString() === currHor;  
                     });
 
+                    db.Result.find({compId: comp._id, horseId: currHor}, (err, results) => {
+                        if(results.length){
+                            results.forEach((result) => {
+                                let resToObj = result.toObject();
+                                resToObj.horseId = horseWithSN;
+                                resToObj.ratesType = comp.meta.ratesType;
+                                socket.broadcast.emit('canStartVote-'+result.arbiterId, { result: resToObj });
+                            });
+                        }
+                        else{
+                            callback(null, resArray, horseWithSN, comp.meta.ratesType);
+                        }
+                    });
+
+
+                }, 
+                (resArray, horseWithSN, ratesType) => {
                     db.Result.insertMany(resArray, (err, saved) => {
                         if(err){
                             socket.emit('err', { err: 'Nie zapisano wyników startowych!', status: 404});
@@ -216,12 +259,11 @@ io.on('connection', (socket) => {
 
                             let resToObj = result.toObject();
                             resToObj.horseId = horseWithSN;
-                            resToObj.ratesType = comp.meta.ratesType;
+                            resToObj.ratesType = ratesType;
                             socket.broadcast.emit('canStartVote-'+result.arbiterId, { result: resToObj });
                         });
 
                     });
-
                 }]);
         });
         socket.on('remind-endEst', (compId) => {
@@ -253,8 +295,9 @@ io.on('connection', (socket) => {
                         }
 
                         let arbToRemind = _.filter(results, (result) => {
-                            return (isNaN(result.overall) || 
+                            return (isNaN(result.type) || 
                                     isNaN(result.head) || 
+                                    isNaN(result.neck) || 
                                     isNaN(result.body) || 
                                     isNaN(result.legs) || 
                                     isNaN(result.movement));  
@@ -272,14 +315,24 @@ io.on('connection', (socket) => {
                 },
                 (comp, results, callback) => { 
 
-                    comp.startList.currentVoteHorse = undefined;
 
-                    comp.save((err, saved) => {
-                        results.forEach((result) => {
-                            socket.broadcast.emit('canStartVote-' + result.arbiterId);
+                    db.Result.find({compId: comp._id}, (err, res) => {
+
+                        if((res.length/comp.meta.arbitersCount) === comp.startList.referringHorses.length){
+                            comp.meta.finished = true;
+                            socket.emit('endComp-'+comp._id);
+                        } 
+                        let horseToDelete = comp.startList.currentVoteHorse;
+                        comp.startList.currentVoteHorse = undefined;
+
+                        comp.save((err, saved) => {
+                            results.forEach((result) => {
+                                socket.broadcast.emit('canStartVote-' + result.arbiterId);
+                            });
+                            socket.emit('setCurrHorse-' + compId, { horseToDelete: horseToDelete });
                         });
-                        socket.emit('setCurrHorse-' + compId);
                     });
+
                 }
             ]);
 

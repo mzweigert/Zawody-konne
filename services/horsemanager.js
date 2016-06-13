@@ -119,7 +119,7 @@ router.put('/updateHorse', (req, res) => {
         found.gender = req.body.gender;
         found.breeder = req.body.breeder;
         found.save((err) => {
-            console.log(found);
+       
             if(err)
                 res.status(400).json(err);
             else

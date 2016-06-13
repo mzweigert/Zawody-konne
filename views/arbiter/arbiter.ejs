@@ -6,6 +6,7 @@
 
         <script src='/bower_components/jquery/dist/jquery.js'></script>
         <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
+        <script src="/bower_components/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
         <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/utils.js"></script>
@@ -20,7 +21,6 @@
 
         <div class="jumbotron">
             <div id="arbiter-panel" style="<% if(result.horseId){ %> display: block; <% } else { %> display: none; <% } %>">
-                <div hidden="true" id="resultId" value="<%= result._id %>"></div>
                 <div hidden="true" id="compId" value="<%= result.compId %>">></div>
                 <div hidden="true" id="arbiterId" value="<%= result.arbiterId %>"></div>
                 <div hidden="true" id="horseId" value="<%= result.horseId? result.horseId.horse : 'undefined' %>"></div>
@@ -31,13 +31,13 @@
                 <div><% result %></div>
                 <div class="row">
                     <div class="col-sm-2">
-                        <h3>Ogólna</h3>
+                        <h3>Typ</h3>
                     </div>
                     <div class="col-sm-8">
-                        <div id="overall" class="slider"></div>
+                        <div id="type" class="slider"></div>
                     </div>
                     <div class="col-sm-2">
-                        <h3 class="result"><%= !isNaN(result.overall)? result.overall : 'n. o.' %></h3>
+                        <h3 class="result"><%= !isNaN(result.type)? result.type : 'n. o.' %></h3>
                     </div>
                 </div>
                 <div class="row">
@@ -53,7 +53,18 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-2">
-                        <h3>Ciało</h3>
+                        <h3>Szyja</h3>
+                    </div>
+                    <div class="col-sm-8">
+                        <div id="neck" class="slider"></div>
+                    </div>
+                    <div class="col-sm-2">
+                        <h3 class="result"><%= !isNaN(result.neck)? result.neck : 'n. o.' %></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <h3>Kłoda</h3>
                     </div>
                     <div class="col-sm-8">
                         <div id="body" class="slider"></div>

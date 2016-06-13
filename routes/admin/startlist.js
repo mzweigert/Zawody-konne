@@ -3,8 +3,9 @@
 var express = require("express"),
     db = require('../../db/database.js'),
     mongoose = require('mongoose'),
-    _ = require('underscore'),
-    router = express.Router();
+    async = require('async'),
+        _ = require('underscore'),
+        router = express.Router();
 
 router.get('/:id/startList', (req,res) =>{
 
@@ -13,56 +14,89 @@ router.get('/:id/startList', (req,res) =>{
         return res.status(404);
     }
 
+    async.waterfall([
+        (callback) => {
 
-    db.Competition.findById(req.params.id)
-        .populate('startList.referringHorses.horse')
-        .exec((err, found) => {
+            db.Competition.findById(req.params.id)
+                .populate('startList.referringHorses.horse')
+                .exec((err, found) => {
 
-        if(err)
-            return res.status(400).json(err);
-        if(!found)
-            return res.status(404);
-        if(found.meta.started)
-            return res.redirect('./results');
+                if(err)
+                    return res.status(400).json(err);
+                if(!found)
+                    return res.status(404);
+                if(found.meta.started)
+                    return res.redirect('./results');
 
-        db.Horse.find({}, (err, horses) => {
-            if(err)
-                res.status(400).json(err);
-            else{
+                callback(null, found);
 
-                let refHLength =  found.startList.referringHorses.length,
-                    availHorses =_.filter(horses, function(obj){ 
-                        return _.every(found.startList.referringHorses, (obj2) =>{
+            });
+        },
+        (comp, callback) => {
+
+            db.Competition.find({
+                'meta.startDate': comp.meta.startDate
+            }, 'startList', (err, comps) => {
+
+                let horseComps = [];
+                comps.forEach((comp) => {
+                      horseComps = horseComps.concat(comp.startList.referringHorses); 
+                });
+            
+                callback(null, comp, horseComps);
+
+            });
+
+        },
+        (comp, horseComps, callback) => {
+
+            db.Horse.find({}, (err, horses) => {
+                if(err)
+                    return res.status(400).json(err);
+
+                let availHorsesInDay = _.filter(horses, (hor) => {
+                    return !_.find(horseComps, (horComp) =>{
+                        return hor._id.toString() === horComp.horse.toString();
+                    });
+                });
+                console.log((availHorsesInDay.length + comp.startList.referringHorses.length))
+                if((availHorsesInDay.length + comp.startList.referringHorses.length) < 3){
+                    return res.status(400).send("Ilość dostępnych koni równa " + availHorsesInDay.length + ' jest za mała aby stworzyć listę startową, gdzie potrzeba minimum 3 konie. Zmień dzień');
+                }
+                let refHLength =  comp.startList.referringHorses.length,
+                    availHorses =_.filter(availHorsesInDay, function(obj){ 
+                        return _.every(comp.startList.referringHorses, (obj2) =>{
                             return obj._id.toString() !== obj2.horse._id.toString();
                         });
                     }); 
 
                 let lengthGrH = 0;
 
-                found.startList.groups.forEach((elem) => {
+                comp.startList.groups.forEach((elem) => {
                     lengthGrH += elem.horses.length;
                 });
 
                 let editGroups;
-                
-                if(refHLength)
+
+                if(refHLength.length)
                     editGroups = lengthGrH === refHLength? true : false;
                 else
                     editGroups = false;
-                
-           
+
                 res.render('admin/startlist', { 
-                    id: found._id, 
-                    referringHorses: found.startList.referringHorses,
+                    id: comp._id, 
+                    referringHorses: comp.startList.referringHorses,
                     availableHorses: availHorses,
                     editGroups: editGroups
                 });
 
-            }
-        });
+
+            });
+
+        }
+    ]);
 
 
-    });
 
 });
 

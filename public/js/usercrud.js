@@ -31,10 +31,9 @@ $(()=>{
         resizeTable($tbody.parent());
     }).resize();
     
-    window.setTimeout(() => resizeTable($tbody.parent()), 5);
+    window.setTimeout(() => resizeTable($tbody.parent()), 50);
     
     $tbody.on('click', '.remove-row', (e) => {
-
         deleteRow = $(e.target).closest('tr');
     });
     $("#delete-btn").on('click', () => {
@@ -140,7 +139,12 @@ $(()=>{
             })
 
         }).success((res) => {
+     
+            
             createRow(createObj(res), $tbody);
+            if($tbody.children().length === 1)
+                resizeTable($tbody.parent());
+            
             $tbody.scrollTop($tbody[0].scrollHeight);
             $tbody.children().last().css({backgroundColor: '#5cb85c'});
             $tbody.children().last().animate({backgroundColor: 'transparent'}, 1000);

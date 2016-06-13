@@ -3,97 +3,141 @@
 var express = require("express"),
     db = require('../../db/database.js'),
     mongoose = require('mongoose'),
-    _ = require('underscore'),
-    router = express.Router();
+    async = require('async'),
+        _ = require('underscore'),
+        router = express.Router();
 
 router.get('/:id/addGroups', (req,res) =>{
 
     if(!req.params.id ){
         return res.status(404);
     }
-    db.Competition.findById(req.params.id)
-        .populate('startList.referringHorses.horse')
-        .exec((err, found) => {
+    let spliteByGroups = (array, arrGroups) => {
 
-        if(err)
-            return res.status(400).json(err);
-        if(!found)
-            return res.status(404);
-        if(found.startList.referringHorses.length < 3)
-            return res.status(404).send('Dodaj listę startową aby zarządzać grupami');
-        if(found.meta.started)
-            return res.redirect('./results');
+        if(!arrGroups){
+            arrGroups = [];
+        }
+        if(!array){
+            return arrGroups;
+        }
+        if(!array.length){
+            return arrGroups;
+        }
+        let k = array.length;
 
-        let spliteByGroups = (array, arrGroups) => {
-
-            if(!arrGroups){
-                arrGroups = [];
-            }
-            if(!array){
-                return arrGroups;
-            }
-            if(!array.length){
-                return arrGroups;
-            }
-            let k = array.length;
-
-            if(k % 5 === 0){
-                arrGroups.unshift(array.splice(k - 5, 5));
-                return spliteByGroups(array, arrGroups);
-            }else if(k % 4 === 0){
-                arrGroups.unshift(array.splice(k - 4, 4));
-                return spliteByGroups(array, arrGroups);
-            }else if(k % 3 === 0){
-                arrGroups.unshift(array.splice(k -3, 3));
-                return spliteByGroups(array, arrGroups);
-            }
-            else if(k % 3 === 1){
-                arrGroups.unshift(array.splice(k - 4, 4));
-                return spliteByGroups(array, arrGroups);
-            }
-            else{
-                arrGroups.unshift(array.splice(k - 3, 3));
-                return spliteByGroups(array, arrGroups);
-            }
-        };
-        let groupsH = [],
-            reffH = []; 
-        if(found.startList.groups.length){
-            found.startList.groups.forEach((elem) => {
-                groupsH = groupsH.concat(groupsH, elem.horses);
-            });
-
-            reffH = _.filter(found.startList.referringHorses, (refH) => {
-                return _.every(groupsH, (horse) => {
-                    return horse.toString() !== refH.horse._id.toString();  
-                });
-            });  
+        if(k % 5 === 0){
+            arrGroups.unshift(array.splice(k - 5, 5));
+            return spliteByGroups(array, arrGroups);
+        }else if(k % 4 === 0){
+            arrGroups.unshift(array.splice(k - 4, 4));
+            return spliteByGroups(array, arrGroups);
+        }else if(k % 3 === 0){
+            arrGroups.unshift(array.splice(k -3, 3));
+            return spliteByGroups(array, arrGroups);
+        }
+        else if(k % 3 === 1){
+            arrGroups.unshift(array.splice(k - 4, 4));
+            return spliteByGroups(array, arrGroups);
         }
         else{
-            reffH = found.startList.referringHorses;
+            arrGroups.unshift(array.splice(k - 3, 3));
+            return spliteByGroups(array, arrGroups);
         }
+    };
+    async.waterfall([
+        (callback) => {
+
+            db.Competition.findById(req.params.id)
+                .populate('startList.referringHorses.horse')
+                .exec((err, found) => {
+
+                if(err)
+                    return res.status(400).json(err);
+                if(!found)
+                    return res.status(404);
+                if(found.startList.referringHorses.length < 3)
+                    return res.status(404).send('Dodaj listę startową aby zarządzać grupami');
+                if(found.meta.started)
+                    return res.redirect('./results');
 
 
-        let maresGroups,
-            stallionsGroups,
-            genderHN = _.groupBy(reffH, (elem) => {
-                return elem.horse.gender === 'Ogier' ? 'Ogier' : 'Klacz';
+                let groupsH = [],
+                    reffH = []; 
+                if(found.startList.groups.length){
+                    found.startList.groups.forEach((elem) => {
+                        groupsH = groupsH.concat(elem.horses);
+                    });
+
+                    reffH = _.filter(found.startList.referringHorses, (refH) => {
+                        return _.every(groupsH, (horse) => {
+                            return horse.toString() !== refH.horse._id.toString();  
+                        });
+                    });  
+                }
+                else{
+                    reffH = found.startList.referringHorses;
+                }
+
+                if(!reffH.length)
+                    return res.redirect('./editGroups');
+
+
+                let maresGroups,
+                    stallionsGroups,
+                    genderHN = _.groupBy(reffH, (elem) => {
+                        return elem.horse.gender === 'Ogier' ? 'Ogier' : 'Klacz';
+                    });
+
+                genderHN.Klacz = spliteByGroups(genderHN.Klacz);
+                genderHN.Ogier = spliteByGroups(genderHN.Ogier);
+                callback(null, found, genderHN);
+            });
+        },
+        (comp, genderHN, callback) => {
+            db.Competition.find({
+                'meta.startDate': comp.meta.startDate
+            }, 'startList', (err, comps) => {
+
+                let arbComps = [];
+                comps.forEach((competition) => {
+                    //Nie bierz pod uwagę zawodów pod ktorymi zostalo wywolane addGroups
+                    if(competition._id.toString() !== comp._id.toString()){
+                        competition.startList.groups.forEach((group) => {
+                            arbComps = arbComps.concat(group.arbiters); 
+                        });
+                    }
+                });
+
+                callback(null, comp, genderHN, arbComps);
+
             });
 
-        genderHN.Klacz = spliteByGroups(genderHN.Klacz);
-        genderHN.Ogier = spliteByGroups(genderHN.Ogier);
+        },
+        (comp, genderHN, arbComps, callback) => {
+            db.User.find({'role' : 'arbiter'}, (err, arbiters) => {
 
-        db.User.find({role: 'arbiter'}, (err, arbiters) => {
+                let availArbInDay = _.filter(arbiters, (arb) => {
+                    return !_.find(arbComps, (arbComp) =>{
+                        return arb._id.toString() === arbComp.toString();
+                    });
+                });
 
-            res.render('admin/addGroups', { 
-                id: found._id,
-                maresGroups:   genderHN.Klacz,
-                stallionsGroups: genderHN.Ogier,
-                arbiters: arbiters
+                if(availArbInDay.length < comp.meta.arbitersCount){
+                    return res.status(400).send("Ilość dostępnych sedziów równa " + availArbInDay.length + ' w tym dniu jest za mała aby stworzyć grupy. Liczba sędziów musi wynosić ' + comp.meta.arbitersCount + '. Zmień dzień.');
+                }
+                else{
+                    res.render('admin/addGroups', { 
+                        id: comp._id,
+                        maresGroups:   genderHN.Klacz,
+                        stallionsGroups: genderHN.Ogier,
+                        arbiters: availArbInDay
+                    });
+                }
+
             });
-        });
+        }
+    ]);
 
-    });
 
 });
 
@@ -102,60 +146,95 @@ router.get('/:id/editGroups', (req,res) =>{
     if(!req.params.id ){
         return res.status(404);
     }
-    db.Competition.findById(req.params.id)
-        .populate('startList.referringHorses.horse')
-        .populate('startList.groups.arbiters')
-        .populate('startList.groups.horses')
-        .exec((err, found) => {
+    async.waterfall([
+        (callback) => {
+            db.Competition.findById(req.params.id)
+                .populate('startList.referringHorses.horse')
+                .populate('startList.groups.arbiters')
+                .populate('startList.groups.horses')
+                .exec((err, found) => {
 
-        if(err)
-            return res.status(400).json(err);
-        if(!found)
-            return res.status(404);
-        if(found.startList.referringHorses.length < 3)
-            return res.status(404).send('Dodaj listę startową aby zarządzać grupami');
-        if(found.meta.started)
-            return res.redirect('./results');
+                if(err)
+                    return res.status(400).json(err);
+                if(!found)
+                    return res.status(404);
+                if(found.startList.referringHorses.length < 3)
+                    return res.status(404).send('Dodaj listę startową aby zarządzać grupami');
+                if(found.meta.started)
+                    return res.redirect('./results');
 
-        db.User.find({role: 'arbiter'}, (err, arbiters) => {
+                callback(null, found);
+            });
+        },
+        (comp, callback) => {
+            db.Competition.find({
+                'meta.startDate': comp.meta.startDate
+            }, 'startList', (err, comps) => {
 
-            let groups;
-            let availableArbiters = [],
-                horsesWithSN = [];
+                let arbComps = [];
+                comps.forEach((competition) => {
+                    //Nie bierz pod uwagę zawodów pod ktorymi zostalo wywolane addGroups
+                    if(competition._id.toString() !== comp._id.toString()){
+                        competition.startList.groups.forEach((group) => {
+                            arbComps = arbComps.concat(group.arbiters); 
+                        });
+                    }
+                });
 
+                callback(null, comp, arbComps);
 
-            groups = found.startList.groups.map((elem) => {
-                let obj = elem.toObject();
+            });
 
-                availableArbiters = _.filter(arbiters, (arbiter) => {
-                    return _.every(elem.arbiters, (arbGr) => {
-                        return arbGr._id.toString() !== arbiter._id.toString();
+        },
+        (comp, arbComps, callback) => {
+
+            db.User.find({role: 'arbiter'}, (err, arbiters) => {
+
+                let availArbInDay = _.filter(arbiters, (arb) => {
+                    return !_.find(arbComps, (arbComp) =>{
+                        return arb._id.toString() === arbComp.toString();
                     });
                 });
-                horsesWithSN = _.filter(found.startList.referringHorses, (SLHorse) => {
-                    return _.find(elem.horses, (horse) => {
-                        return horse._id.toString() === SLHorse.horse._id.toString();
+
+
+                let groups;
+                let availableArbiters = [],
+                    horsesWithSN = [];
+
+
+                groups = comp.startList.groups.map((elem) => {
+                    let obj = elem.toObject();
+
+                    availableArbiters = _.filter(availArbInDay, (arbiter) => {
+                        return _.every(elem.arbiters, (arbGr) => {
+                            return arbGr._id.toString() !== arbiter._id.toString();
+                        });
                     });
+                    horsesWithSN = _.filter(comp.startList.referringHorses, (SLHorse) => {
+                        return _.find(elem.horses, (horse) => {
+                            return horse._id.toString() === SLHorse.horse._id.toString();
+                        });
+                    });
+                    obj.horses = horsesWithSN;
+                    obj.availableArbiters = availableArbiters;
+                    return obj;
+
                 });
-                obj.horses = horsesWithSN;
-                obj.availableArbiters = availableArbiters;
-                return obj;
 
+                let  genderHN = _.groupBy(groups, (elem) => {
+                    return elem.gender === 'Ogier' ? 'Ogier' : 'Klacz';
+                });
+
+                res.render('admin/editGroups', { 
+                    id: comp._id,
+                    maresGroups:   genderHN.Klacz? genderHN.Klacz: [],
+                    stallionsGroups: genderHN.Ogier? genderHN.Ogier: [] 
+                });
             });
 
-            let  genderHN = _.groupBy(groups, (elem) => {
-                return elem.gender === 'Ogier' ? 'Ogier' : 'Klacz';
-            });
+        }
+    ]);
 
-            res.render('admin/editGroups', { 
-                id: found._id,
-                maresGroups:   genderHN.Klacz? genderHN.Klacz: [],
-                stallionsGroups: genderHN.Ogier? genderHN.Ogier: [] 
-            });
-        });
-
-
-    });
 
 });
 
@@ -177,15 +256,18 @@ router.post('/addGroup', (req, res) => {
     if(check.length < 3 || check.length > 5 ){
         return res.status(400).json({message:'Grupa musi mieć minimum 3 i maksimum 5 koni!', fail: group, typeErr: 'horses'});
     }
-    check = _.uniq(group.arbiters, (elem) => {
-        return elem; 
-    });
-    if(group.arbiters.length < 5 || group.arbiters.length > 6 ){
-        return res.status(400).json({message:'Grupa musi mieć minimum 5 i maks 6 sędziów!', fail: group, typeErr: 'arbiters'});
-    }
+
+
     db.Competition.findById(req.body.id, (err, found) => { 
         if(err)
             return res.status(400).json(err);
+
+        check = _.uniq(group.arbiters, (elem) => {
+            return elem; 
+        });
+        if(group.arbiters.length !== found.meta.arbitersCount){
+            return res.status(400).json({message:'Grupa musi mieć ' + found.meta.arbitersCount + ' sędziów!', fail: group, typeErr: 'arbiters'});
+        }
 
         delete group.id;
         let arrTmp = [];
@@ -235,16 +317,18 @@ router.post('/editGroup', (req, res) => {
     if(check.length < 3 || check.length > 5 ){
         return res.status(400).json({message:'Grupa musi mieć minimum 3 i maksimum 5 koni!', fail: group, typeErr: 'horses'});
     }
-    check = _.uniq(group.arbiters, (elem) => {
-        return elem; 
-    });
-    if(group.arbiters.length < 5 || group.arbiters.length > 6 ){
-        return res.status(400).json({message:'Grupa musi mieć minimum 5 i maks 6 sędziów!', fail: group, typeErr: 'arbiters'});
-    }
+
+
     db.Competition.findById(req.body.id, (err, found) => { 
         if(err)
             return res.status(400).json(err);
-
+        
+        check = _.uniq(group.arbiters, (elem) => {
+            return elem; 
+        });
+        if(group.arbiters.length !== found.meta.arbitersCount){
+            return res.status(400).json({message:'Grupa musi mieć ' + found.meta.arbitersCount + ' sędziów!', fail: group, typeErr: 'arbiters'});
+        }
 
         db.Competition.update({'startList.groups._id': group.id}, {'$set': {
             'startList.groups.$.name': group.name,
@@ -263,6 +347,5 @@ router.post('/editGroup', (req, res) => {
 
 
 });
-
 
 module.exports = router;

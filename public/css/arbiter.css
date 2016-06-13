@@ -1,1 +1,1 @@
-.jumbotron{margin:0 auto;margin-top:20px;width:60%}.jumbotron .row{margin:0 auto}.jumbotron .row{margin-top:5%;display:flex;align-items:center}.jumbotron .row h3{margin:0 auto}
+.jumbotron{background-color:darkgray;margin:0 auto;margin-top:5%;font-size:25px;width:80%}.jumbotron h3{font-size:40px}.jumbotron .ui-slider-handle,.jumbotron .ui-state-default{background:aqua !important}.jumbotron .row{margin:0 auto;margin-top:15%;display:flex;align-items:center}.jumbotron .row h3{margin:0 auto}

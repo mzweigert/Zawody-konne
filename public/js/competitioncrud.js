@@ -45,7 +45,7 @@ $(()=>{
         return {
             id: elem._id,
             name: elem.meta.name,
-            startDate: elem.meta.startDate,
+            startDate: elem.meta.startDate + ' ' + elem.meta.startHour,
             arbitersCount: elem.meta.arbitersCount,
             ratesType:  $("#rates-type").find('option[value="'+type+'"]').text() + ' ' + $("#rates-interval").find('option[value="'+interval+'"]').text(),
             startList: '<a href="./competition/'+ elem._id+'/'+ (started? 'results' : 'startList') + '">' +
@@ -125,7 +125,8 @@ $(()=>{
                 meta: {
                     id: $inputsUpdate.eq(0).val(),
                     name: newName, 
-                    startDate: newStartDate,
+                    startDate: newStartDate.substr(0, newStartDate.indexOf(' ')),
+                    startHour: newStartDate.substr(newStartDate.indexOf(' ') +1),
                     arbitersCount: newArbitersCount,
                     ratesType: newRatesType + ' ' + newRatesInterval  
                 }
@@ -143,8 +144,7 @@ $(()=>{
     $('#add-btn').click(() => {
 
         let $addAlert = $('#add-alert');
-        $addAlert.removeClass('in');
-        $addAlert.text('');
+        $addAlert.removeClass('in').text('');
 
         $.ajax({
             url: './competition/addCompetitionMeta',
@@ -154,7 +154,8 @@ $(()=>{
             data:  JSON.stringify({
                 meta:{
                     name: name.val(), 
-                    startDate: startDate.val(),
+                    startDate: startDate.val().substr(0, startDate.val().indexOf(' ')),
+                    startHour: startDate.val().substr(startDate.val().indexOf(' ') +1),
                     arbitersCount: arbitersCount.val(),
                     ratesType: ratesType.val() + ' ' + ratesInterval.val()
                 }
@@ -162,6 +163,8 @@ $(()=>{
 
         }).success((res) => {
             createRow(createObj(res), $tbody);
+            if($tbody.children().length === 1)
+                resizeTable($tbody.parent());
             $tbody.scrollTop($tbody[0].scrollHeight);
             $tbody.children().last().css({backgroundColor: '#5cb85c'});
             $tbody.children().last().animate({backgroundColor: 'transparent'}, 1000);

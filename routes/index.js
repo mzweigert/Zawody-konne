@@ -3,7 +3,7 @@
 // module.exports ==> exports
 var express = require('express'),
     db = require('../db/database.js'),
-    competition = require('./competition.js'),
+    competition = require('./waist/competition.js'),
     login = require('./login.js'),
     admin   = require('./admin/mw_admin.js'),
     arbiter = require('./arbiter/mw_arbiter.js'),
@@ -22,14 +22,13 @@ var checkRole = function(role) {
 router.get('/', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
 
-     db.Competition.find({}, (err, competitions) => {
+     db.Competition.find({'meta.started' : true}, (err, competitions) => {
         if(err)
            return res.status(404);
-        
+            console.log(competitions);
         res.render('index', {
             title: 'Zawody konne',
             competitions: competitions
-            
         });
     }); 
     

@@ -30,7 +30,6 @@ let resizeTable = (table) => {
 let makeRowsInTable = (listOfObject, $tbody) =>
 {
     listOfObject.forEach((elem) => {
-
         createRow(elem, $tbody);
     });
 };

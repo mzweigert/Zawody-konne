@@ -15,6 +15,7 @@
     "dependencies": {
         "jquery": "*",
         "jquery-ui": "*",
+        "jquery-ui-touch-punch" : "*",
         "bootstrap": "*",
         "bootstrap-multiselect": "*",
         "eonasdan-bootstrap-datetimepicker": "*"

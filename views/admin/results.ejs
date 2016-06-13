@@ -12,8 +12,9 @@
         <link rel="stylesheet" href="/css/results.css">
     </head>
     <body>
-        <div class="jumbotron">
-            <div hidden="true" id="compId" value="<%= compId %>"></div>
+        <div hidden="true" id="compId" value="<%= compId %>"></div>
+        <% if(!finished) { %>
+        <div class="jumbotron" id="control-panel">
             <div hidden="true" id="currHorse" value="<%= currentHorse %>"></div>
             <div class="row">
                 <div class="col-sm-12">
@@ -56,7 +57,9 @@
             </div>
 
         </div>
-        <div class="jumbotron">
+        <% } %>
+        <div class="jumbotron" id="results">
+            <% if(finished) { %><p class="text-center">Zawody Skonczone!</p><% } %>  
             <div class="text-center">
                 <% groups.forEach((group) => { %>
                 <% group.horses.forEach((horse) => { %>
@@ -65,7 +68,7 @@
                 <% }); %>
             </div>
 
-            <div id="carousel" class="carousel slide" data-ride="carousel">
+            <div id="carousel" class="carousel slide" data-ride="carousel" style="margin-top: 5%;">
 
                 <!-- Wrapper for slides -->
                 <div class="carousel-inner">
@@ -73,13 +76,14 @@
                     <% group.horses.forEach((horse) => { %>
 
                     <div class="item">
-                        <p><%= horse.name %></p>
+                        <p class="text-center"><%= horse.name %></p>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>Sędzia</th>
-                                    <th>Ogólna</th>
+                                    <th>Typ</th>
                                     <th>Głowa</th>
+                                    <th>Szyja</th>
                                     <th>Ciało</th>
                                     <th>Nogi</th>
                                     <th>Ruch</th>
@@ -94,7 +98,7 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-
+                                    <td></td>
                                 </tr>
                                 <% }); %>
                             </tbody>    

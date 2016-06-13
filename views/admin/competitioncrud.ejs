@@ -20,7 +20,7 @@
             <div class="container text-center">
                 <div class="alert alert-danger fade" id='add-alert'>
                 </div>
-                <p>Konie</p>
+                <p>Zawody</p>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -38,15 +38,15 @@
                                 <button id="add-btn" type="submit" class="btn btn-success">Dodaj</button>
                             </th>
                             <th>
-                                <input id="name" type="text" class="form-control" placeholder="nazwa">
+                                <input id="name" type="text" class="form-control">
                             </th>
                             <th class="td-date">
                                 <div class="input-group">
-                                    <input id="start-date" type="text" class="form-control form-date" placeholder="data rozpoczecia">
+                                    <input id="start-date" type="text" class="form-control form-date">
                                 </div>
                             </th>
                             <th>
-                                <input id="arbiters-count" type="number" min="5" class="form-control" placeholder="liczba sedziow">
+                                <input id="arbiters-count" type="number" min="5" max="9" onpaste="return false;" class="form-control">
                             </th>
                             <th>
                                 <select class="form-control" id="rates-type">
@@ -69,11 +69,11 @@
                             <% var rT = competition.meta.ratesType; %>
                             <td><%= competition._id %></td>
                             <td><%= competition.meta.name %></td>
-                            <td><%= competition.meta.startDate %></td>
+                            <td><%= competition.meta.startDate + ' ' + competition.meta.startHour %></td>
                             <td><%= competition.meta.arbitersCount %></td>
                             <td>
                                 <%= rT.substr(0, rT.indexOf(' ')) === 'half'? 'połówki' : 'całe'  %>
-                                <%= rT.substr(rT.indexOf(' ')) === 'ten'? '0-10' : '0-20'  %>
+                                <%= rT.substr(rT.indexOf(' ')+1) === 'ten'? '0-10' : '0-20'  %>
                             </td>
                             <td>
                                 <a href="./competition/<%= competition._id %>/<%= competition.meta.started? 'results' : 'startList'%>">

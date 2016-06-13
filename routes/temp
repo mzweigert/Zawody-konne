@@ -1,32 +1,49 @@
- <tr id="<%= result._id %>">
-                                    <td id="<%= result.arbiterId._id %>">
-                                        <%= result.arbiterId.firstname + ' ' + result.arbiterId.lastname %>
-                                    </td>
-                                    <td><%= result.overall? result.overall : '' %></td>
-                                    <td><%= result.head? result.head : '' %></td>
-                                    <td><%= result.body? result.body : '' %></td>
-                                    <td><%= result.legs? result.legs : '' %></td>
-                                    <td><%= result.movement? result.movement : '' %></td>
-                                </tr>
-                                
-                                
-                                <% results.forEach((result) => { %>
 
-                                <tr data-value="<%= arbiter._id %>">
-                                    <td><%= arbiter.firstname + ' ' + arbiter.lastname %></td>
+    async.waterfall([
+        (callback) => {
+            db.Competition.findById(req.body.id, (err, found) => { 
+                if(err)
+                    return res.status(400).json(err);
 
-                                    <% if(horse._id.toString() === result.horseId.toString() && result.arbiterId._id.toString() === arbiter._id.toString()){ %>
+                check = _.uniq(group.arbiters, (elem) => {
+                    return elem; 
+                });
+                if(group.arbiters.length !== found.meta.arbitersCount){
+                    return res.status(400).json({message:'Grupa musi mieć ' + found.meta.arbitersCount + '!', fail: group, typeErr: 'arbiters'});
+                }
+                
+                callback(null, found);
+            });
+        },
+        (comp, callback) => {
+            db.Competition.find({
+                'meta.startDate': comp.meta.startDate
+            }, 'startList', (err, comps) => {
 
-                                    <td><%= result.overall? result.overall : '' %></td>
-                                    <td><%= result.head? result.head : '' %></td>
-                                    <td><%= result.body? result.body : '' %></td>
-                                    <td><%= result.legs? result.legs : '' %></td>
-                                    <td><%= result.movement? result.movement : '' %></td>
+                let arbComps = [];
+                comps.forEach((comp) => {
+                    comp.startList.groups.forEach((group) => {
+                        arbComps = arbComps.concat(group.arbiters); 
+                    });
+                });
+                
+                callback(null, arbComps);
+            });
+        },
+        (arbComps, callback) => {
+            db.User.find({'role' : 'arbiter'}, (err, arbiters) => {
 
-                                    <% } %>
+                let availArb = _.filter(arbiters, (arb) => {
+                    return !_.find(arbComps, (arbComp) =>{
+                        return arb._id.toString() === arbComp.toString();
+                    });
+                });
 
-
-
-                                </tr>
-
-                                <% }); %>
+                if(availArb.length < 5){
+                    return res.status(400).send("Liczba dostępnych sedziów w tym dniu wynosi " + availArb.length + '!');
+                }
+                else{ 
+                    
+                }
+            });
+        }]);

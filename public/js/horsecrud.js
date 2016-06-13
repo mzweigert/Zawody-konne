@@ -125,6 +125,8 @@ $(()=>{
             })
         }).success((res) => {
             createRow(createHorse(res), $tbody);
+            if($tbody.children().length === 1)
+                resizeTable($tbody.parent());
             $tbody.scrollTop($tbody[0].scrollHeight);
             $tbody.children().last().css({backgroundColor: '#5cb85c'});
             $tbody.children().last().animate({backgroundColor: 'transparent'}, 1000);

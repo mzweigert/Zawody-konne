@@ -123,7 +123,11 @@
                         </div>
                         <div class="col-sm-2">
                             <label>Dostępni&nbsp;sędziowie</label>
-                            <select class="multiple-select form-control available-arbiters" multiple="true"></select>
+                            <select class="multiple-select form-control available-arbiters" multiple="true">
+                                <% elem.availableArbiters.forEach((arb) => {%>
+                                <option value="<%= arb._id %>"><%= arb.firstname %> <%= arb.lastname %> </option>
+                                <% });%>
+                            </select>
                         </div>
                         <div class="col-sm-2 st-btns">
                             <div class="input-group">

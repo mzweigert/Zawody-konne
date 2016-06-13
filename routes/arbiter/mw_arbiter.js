@@ -13,6 +13,7 @@ var express = require('express'),
 router.get('/', (req, res) => {
     db.Competition.findOne({
         'meta.started': true,
+        'meta.finished' : false,
         'startList.groups.arbiters': req.user._id }, 'meta startList')
         .exec((err, found) => {
 
@@ -110,23 +111,27 @@ io.sockets.on('connection', (socket) => {
                 },
                 (comp, callback) => {
 
+        
                     db.Result.findOne({ compId: comp._id, 
                                        arbiterId: user._id,
                                        horseId: comp.startList.currentVoteHorse })
                         .populate('horseId')
                         .exec((err, resFound) => {
 
+                      
                         if(!resFound){
                             socket.emit('currentHorse', { err: 'Nie oceniasz teraz żadnego konia.', status: 404});
                             return;
                         }
                         else{
                             //BARDZO WAŻNE ZAPISANIE ID ZALOGOWANEGO UZYTKOWNIKA
+                              
                             result.arbiterId = user._id;
+                     console.log(result);
                             db.Result.findOneAndUpdate({_id: resFound._id}, result, {new:true})
                                 .populate('arbiterId')
                                 .exec((err, result) => {
-
+                                    
                                 if(err){
                                     socket.emit('err', { err: err, status: 400});
                                     return;

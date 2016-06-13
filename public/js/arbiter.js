@@ -7,25 +7,26 @@ $(() => {
         ratesInfo = $('#ratesInfo').attr('value'),
         ratesType = ratesInfo.substr(0, ratesInfo.indexOf(' ')),
         ratesInterval = ratesInfo.substr(ratesInfo.indexOf(' ')+1),
-        $overall = $('#overall'), $head = $('#head'), $body = $('#body'), $legs = $('#legs'), $movement = $('#movement'),
+        $type = $('#type'), $head = $('#head'), $neck = $('#neck'), $body = $('#body'), $legs = $('#legs'), $movement = $('#movement'),
         sliderStop = (event, ui) =>{
 
             animObj($(ui.handle), 'transparent');
             $('#alert').removeClass('in');
             $(ui.handle).closest('.row').find('.result').text(ui.value);
 
-            let overall = $overall.closest('.row').find('.result').text(),
+            let type = $type.closest('.row').find('.result').text(),
                 head = $head.closest('.row').find('.result').text(),
+                neck = $neck.closest('.row').find('.result').text(),
                 body = $body.closest('.row').find('.result').text(),
                 legs = $legs.closest('.row').find('.result').text(),
                 movement = $movement.closest('.row').find('.result').text();
 
             let obj = {
-                _id : $('#resultId').attr('value') !== 'undefined'? $('#resultId').attr('value') : undefined,
                 compId: $('#compId').attr('value'),
                 horseId: $('#horseId').attr('value'),
-                overall : isNaN(overall) ? undefined : overall,
+                type : isNaN(type) ? undefined : type,
                 head : isNaN(head) ? undefined : head,
+                neck : isNaN(neck) ? undefined : neck,
                 body : isNaN(body) ? undefined : body,
                 legs : isNaN(legs) ? undefined : legs,
                 movement : isNaN(movement) ? undefined : movement,
@@ -71,6 +72,10 @@ $(() => {
             $('#compId').attr('value', undefined);
             $('#horseId').attr('value', undefined);
             $('#horseDesc').text('');
+            $('.slider').each((i, v) => {
+                $(v).closest('.row').find('.result').text('n.o.');
+                $(v).slider('value', 0);
+            });
         }else{
             let result = data.result;
             $('#no-curr-horse').hide(500);
@@ -89,8 +94,9 @@ $(() => {
 
 
     socket.on('remind-'+arbiterId, (result) => {
-        if(!result.overall){ animObj($overall); }
+        if(!result.type){ animObj($type); }
         if(!result.head){ animObj($head); }
+        if(!result.neck){ animObj($neck); }
         if(!result.body){ animObj($body); }
         if(!result.legs){ animObj($legs); }
         if(!result.movement){ animObj($movement); }
