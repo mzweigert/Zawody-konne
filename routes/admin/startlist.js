@@ -59,7 +59,7 @@ router.get('/:id/startList', (req,res) =>{
                         return hor._id.toString() === horComp.horse.toString();
                     });
                 });
-                console.log((availHorsesInDay.length + comp.startList.referringHorses.length))
+        
                 if((availHorsesInDay.length + comp.startList.referringHorses.length) < 3){
                     return res.status(400).send("Ilość dostępnych koni równa " + availHorsesInDay.length + ' jest za mała aby stworzyć listę startową, gdzie potrzeba minimum 3 konie. Zmień dzień');
                 }

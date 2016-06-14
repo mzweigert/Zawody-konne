@@ -20,14 +20,12 @@
                 <div class="col-sm-12">
                     <div class="form-inline text-center">
                         <div class="form-group text-center">
-                            <button type="button" id="remind-endEst" class="btn btn-lg btn-success">Upomnij sędziów / Zakończ ocenianie</button>
+                            <button type="button" id="remind-endEst" class="btn btn-lg btn-success">Upomnij sędziów / Następny Koń</button>
                         </div>
                         <div class="form-group text-center">
-                            <button type="button" id="allow-estimation" class="btn btn-lg btn-success">Zezwól na ocenianie konia</button>
+                            <button type="button" id="allow-estimation" class="btn btn-lg btn-success">Zacznij ocenianie grupy</button>
                         </div>
-                        <div class="form-group text-center">
-                            <a type="button" class="btn btn-lg btn-success" href="#">Zawody</a>
-                        </div>
+                        
                     </div>
 
                 </div>
@@ -38,7 +36,7 @@
                     <div class="col-sm-6 text-center">
                         <label>Wybierz grupe</label>
                         <select class="select-group form-control" size="<%= groups.length ===1? 2: groups.length %>">
-                            <% groups.forEach((group, i) => { %>
+                            <% groups.forEach((group) => { %>
                             <option class="btn btn-success"  value="<%= group._id %>">Nazwa grupy: <%= group.name %></option>
                             <% }); %>
                         </select>
@@ -46,9 +44,9 @@
                     <div class="col-sm-6 text-center">
                         <label>Konie w grupie</label>
                         <% groups.forEach((group, i) => { %>
-                        <select class="select-horse form-control" size="<%= group.horses.length %>" id="<%= group._id %>">
-                            <% group.horses.forEach((horse, i) => { %>
-                            <option class="btn btn-success" value="<%= horse._id %>"><%= horse.name %></option>  
+                        <select disabled class="select-horse form-control" size="<%= group.horses.length %>" id="<%= group._id %>">
+                            <% group.horses.forEach((horse) => { %>
+                            <option class="horses not-rated" value="<%= horse.horse._id %>"><%= horse.startNumber+"."+horse.horse.name %></option>  
                             <% }); %>
                         </select>
                         <% }); %>
@@ -63,7 +61,7 @@
             <div class="text-center">
                 <% groups.forEach((group) => { %>
                 <% group.horses.forEach((horse) => { %>
-                <a style="cursor: pointer;" class="change-item" data-value="<%= horse._id %>"><%= horse.name %></a>
+                <a style="cursor: pointer;" class="change-item" data-value="<%= horse.horse._id %>"><%= horse.horse.name %></a>
                 <% }); %>
                 <% }); %>
             </div>
@@ -76,7 +74,7 @@
                     <% group.horses.forEach((horse) => { %>
 
                     <div class="item">
-                        <p class="text-center"><%= horse.name %></p>
+                        <p class="text-center"><%= horse.horse.name %></p>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -89,7 +87,7 @@
                                     <th>Ruch</th>
                                 </tr>
                             </thead>
-                            <tbody data-value="<%= horse._id %>">
+                            <tbody data-value="<%= horse.horse._id %>">
                                 <% group.arbiters.forEach((arbiter) => { %>
                                 <tr data-value="<%= arbiter._id %>">
                                     <td><%= arbiter.firstname + ' ' + arbiter.lastname %> </td>

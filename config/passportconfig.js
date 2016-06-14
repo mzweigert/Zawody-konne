@@ -60,7 +60,7 @@ passport.use('signup', new LocalStrategy({
                 // create the user
                 var newUser = new db.User();
                 // set the user's local credentials
-                console.log(req.body.lastname);
+            
                 newUser.username = username;
                 newUser.password = createHash(password);
                 newUser.firstname = req.body.firstname;

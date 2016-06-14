@@ -16,8 +16,6 @@ $(()=>{
         let $this = $(e.target).parent(),
             compId = $this.attr('data-value');
 
-
-
         if(!compId || compId === groupsJumbo.attr('data-comp'))
             return;
 
@@ -31,7 +29,7 @@ $(()=>{
 
 
 
-            $.get('./competition/' + compId, (res) => {
+            $.get('./getCompGroups/' + compId, (res) => {
 
                 groups.children().remove();
 
@@ -55,7 +53,7 @@ $(()=>{
 
                 });
                 resizeTable(groups.parent());
-                
+
                 groupsJumbo.show('slide', {direction: 'left'}, 250, () => {
                     resizeTable(comps.parent());
                 });
@@ -65,8 +63,10 @@ $(()=>{
     });
 
     groups.click((e) => {
-        let $this = $(e.target).parent();
-
-        window.location.href = './competition/' + $this.attr('id');
+        let $this = $(e.target).parent().attr('id');
+        if(!$this)
+            return;
+        
+        window.location.href = './group/' + $this;
     });
 });

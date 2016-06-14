@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src='../bower_components/jquery/dist/jquery.js'></script>
+        <script src='/bower_components/jquery-ui/jquery-ui.min.js'></script>
+        <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/group.js"></script>
+        <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../css/group.css">
+    </head>
+    <body>
+        <div class="waist-area">
+            <div hidden="true" id="groupId" value="<%= groupId %>"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="jumbotron text-center" >
+                        <div class="container text-center">
+                            <% if(fullResults.length) { %>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Miejsce</th>
+                                        <th>Średnia</th>
+                                        <th>Numer Startowy</th>
+                                        <th>Nazwa</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groups">
+                                    <% fullResults.forEach((elem, i) => {%>
+                                    <tr>
+                                        <td><%= i +1 %></td>
+                                        <td><%= elem.average %></td>
+                                        <td><%= elem.horse.startNumber%></td>
+                                        <td><%= elem.horse.horse.name%></td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                            <% } else { %>
+                            <p> Ta grupa nie ma jeszcze wyników</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="jumbotron text-center" id="current-horse">
+                        <div class="container text-center">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Sędzia</th>
+                                        <th>Typ</th>
+                                        <th>Głowa</th>
+                                        <th>Szyja</th>
+                                        <th>Kłoda</th>
+                                        <th>Nogi</th>
+                                        <th>Ruch</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="current-horse">
+                                    <% arbiters.forEach((arbiter) => { %>
+                                    <tr id="<%= arbiter._id %>">
+                                        <td><%= arbiter.firstname + ' ' + arbiter.lastname %> </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>    
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>

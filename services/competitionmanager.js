@@ -8,12 +8,6 @@ var express = require("express"),
     async = require('async'),
         router = express.Router();
 
-
-
-let checkAvailableArbiters = (endCallback, res, meta) => {
-
-};
-
 router.get('/getAllCompetitions', (req, res) => {
 
     db.Competition.find({}, (err, competitions) => {
@@ -60,7 +54,7 @@ router.post('/addCompetitionMeta', (req, res) => {
                     return item;
                 });
                 callback(null, arbComps);
-                console.log(arbComps.length);
+          
             });
 
         },

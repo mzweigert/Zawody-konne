@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="css/waist.css">
     </head>
     <body>
-        Zaloguj się
+     
         <a id="login-page" href="/login" class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></a>
         <div class="waist-area">
             <div class="jumbotron text-center">
@@ -26,6 +26,7 @@
                                 <th>Data rozpoczęcia</th>
                                 <th>Liczba sędziów</th>
                                 <th>Typ oceny</th>
+                                <th>Trwają</th>
                             </tr>
                         </thead>
 
@@ -39,6 +40,10 @@
                                 <td>
                                     <%= elem.meta.ratesType.substr(0, elem.meta.ratesType.indexOf(' ')) === 'half'? 'połówki' : 'całe'  %>
                                     <%= elem.meta.ratesType.substr(elem.meta.ratesType.indexOf(' ')+1) === 'ten'? '0-10' : '0-20'  %>
+                                </td>
+                                <td>
+                                    <%= elem.meta.finished? "Nie" : "Tak" %>
+
                                 </td>
                             </tr>
                             <% }); %>

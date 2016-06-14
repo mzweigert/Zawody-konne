@@ -43,7 +43,6 @@ $(()=>{
                 type: 'DELETE', 
                 contentType: 'application/json',
             }).success((res) => {
-                console.log("DUPA");
                 deleteRow.css({'background-color': '#d9534f'});
                 deleteRow.hide(500);
                 window.setTimeout(() => deleteRow.remove(), 500);

@@ -11,6 +11,7 @@ var express = require('express'),
         router = express.Router();
 
 router.get('/', (req, res) => {
+    
     db.Competition.findOne({
         'meta.started': true,
         'meta.finished' : false,
@@ -105,11 +106,17 @@ io.sockets.on('connection', (socket) => {
                             return;
                         }
 
-
-                        callback(null, comp);
+                        let group = _.find(comp.startList.groups, (group) =>{
+                            return _.find(group.horses, (horse) => {
+                                return horse.toString() === comp.startList.currentVoteHorse.toString(); 
+                            });
+                        });
+                        
+                 
+                        callback(null, comp, group);
                     });
                 },
-                (comp, callback) => {
+                (comp, group, callback) => {
 
         
                     db.Result.findOne({ compId: comp._id, 
@@ -127,7 +134,7 @@ io.sockets.on('connection', (socket) => {
                             //BARDZO WAŻNE ZAPISANIE ID ZALOGOWANEGO UZYTKOWNIKA
                               
                             result.arbiterId = user._id;
-                     console.log(result);
+                 
                             db.Result.findOneAndUpdate({_id: resFound._id}, result, {new:true})
                                 .populate('arbiterId')
                                 .exec((err, result) => {
@@ -136,6 +143,7 @@ io.sockets.on('connection', (socket) => {
                                     socket.emit('err', { err: err, status: 400});
                                     return;
                                 }
+                                socket.broadcast.emit('updateHorse-'+group._id , result);
                                 socket.broadcast.emit('updateVoteComp-'+comp._id , result);
                             });
                         }

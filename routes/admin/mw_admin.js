@@ -36,7 +36,6 @@ router.get('/horse', (req, res) => {
 router.get('/user', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
     db.User.find({}, 'username password firstname lastname role', (err, users) => {
-        console.log(users);
         if(err)
             return res.status(404).send('Nie mozna odnalezc uzytkownikow');
         

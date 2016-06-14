@@ -12,15 +12,16 @@ $(()=> {
 
 
     let addResult = (result) => {
+        $('option[value="'+result.horseId+'"]').removeClass('not-rated').addClass('rated');
         let trArb = $('tbody[data-value="'+ result.horseId + '"]').find('tr[data-value="'+ result.arbiterId._id +'"]');
         trArb.children().remove();
         $('<td>'+ result.arbiterId.firstname + ' ' + result.arbiterId.lastname +'</td>').appendTo(trArb);
-        $('<td>'+ (!isNaN(result.type)? result.type : 'n.o.')  +'</td>').appendTo(trArb);
-        $('<td>'+ (!isNaN(result.head)? result.head : 'n.o.') +'</td>').appendTo(trArb);
-        $('<td>'+ (!isNaN(result.neck)? result.neck : 'n.o.')  +'</td>').appendTo(trArb);
-        $('<td>'+ (!isNaN(result.body)? result.body : 'n.o.') +'</td>').appendTo(trArb);
-        $('<td>'+ (!isNaN(result.legs)? result.legs : 'n.o.') +'</td>').appendTo(trArb);
-        $('<td>'+ (!isNaN(result.movement)? result.movement : 'n.o.') +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.type)? result.type : '')  +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.head)? result.head : '') +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.neck)? result.neck : '')  +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.body)? result.body : '') +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.legs)? result.legs : '') +'</td>').appendTo(trArb);
+        $('<td>'+ (!isNaN(result.movement)? result.movement : '') +'</td>').appendTo(trArb);
     };
 
     carousel.carousel({
@@ -70,35 +71,40 @@ $(()=> {
     });
     $('#allow-estimation').click((e) => {
         $('#alert').removeClass('in');
-        let horseId = $('.select-horse :selected').attr('value');
-        if(!horseId){
+        let groupId = $('.select-group').find(':selected').attr('value');
+
+        if(!groupId){
             $('#alert').addClass('in').text('Wyiberz konia');
             return;
         }
 
-        socket.emit('setCurrHorse', {
+        socket.emit('setCurrGroup', {
             compId: compId, 
-            horseId: horseId
+            groupId: groupId
         });
     });
 
     socket.on('setCurrHorse-' + compId, (data) => {
-
-        if(data.horseToSet){
-            let tbody = $('tbody[data-value="'+ data.horseToSet + '"]');
-
-            $('.select-horse').attr('disabled', true);
-            $('.select-group').attr('disabled', true);
-            $(currHorse).attr('value', data.horseToSet);
-            carousel.carousel(tbody.closest('.item').index());
-        }
-        else {
+        console.log(data);
+        if(!data){
+            
             $('currHorse').attr('value', undefined);
             sHorse.attr('disabled', false);
             sGroup.attr('disabled', false);
             sHorse.find(':selected').attr('selected', false);
             sGroup.find(':selected').attr('selected', false);
         }
+        else{
+            
+            let tbody = $('tbody[data-value="'+ data.horseToSet + '"]');
+            
+            $('option[value="'+data.horseToSet+'"]').attr('selected', true);
+            $('.select-horse').attr('disabled', true);
+            $('.select-group').attr('disabled', true);
+            $(currHorse).attr('value', data.horseToSet);
+            carousel.carousel(tbody.closest('.item').index());
+        }
+
     });
     socket.on('err', (data) => {
         $('#alert').text(data.err).addClass('in');
@@ -110,7 +116,7 @@ $(()=> {
 
     socket.on('endComp-' + compId, (res) => {
         $('#control-panel').first().hide(500, ()=> {
-             $('#control-panel').remove();
+            $('#control-panel').remove();
         });
         $('#results').prepend('<p class="text-center">Zawody skończone!</p>');
     });

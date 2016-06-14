@@ -65,18 +65,22 @@ $(() => {
 
     socket.on('canStartVote-'+arbiterId, (data) => {
 
-
+        $('.slider').each((i, v) => {
+            $(v).closest('.row').find('.result').text('n.o.');
+            $(v).slider('value', 0);
+        });
+        
         if(!data){
             $('#no-curr-horse').show(500);
             $('#arbiter-panel').hide(500);
             $('#compId').attr('value', undefined);
             $('#horseId').attr('value', undefined);
             $('#horseDesc').text('');
-            $('.slider').each((i, v) => {
-                $(v).closest('.row').find('.result').text('n.o.');
-                $(v).slider('value', 0);
-            });
+
         }else{
+            $('.jumbotron').animate({'background-color':'blue'}, 200, ()=> {
+                $('.jumbotron').animate({'background-color': 'gray'}, 200);
+            });
             let result = data.result;
             $('#no-curr-horse').hide(500);
             $('#arbiter-panel').show(500);

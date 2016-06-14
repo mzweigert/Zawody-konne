@@ -22,10 +22,14 @@ var checkRole = function(role) {
 router.get('/', (req, res) => {
     res.header('Content-Type', 'text/html; charset=utf-8');
 
+    if(req.user){
+        if(req.user.role === 'arbiter')
+            return res.redirect('/arbiter');
+    }
      db.Competition.find({'meta.started' : true}, (err, competitions) => {
         if(err)
            return res.status(404);
-            console.log(competitions);
+         
         res.render('index', {
             title: 'Zawody konne',
             competitions: competitions
@@ -34,7 +38,7 @@ router.get('/', (req, res) => {
     
 });
 
-router.use('/competition', competition);
+router.use('/', competition);
 router.use('/login', login);
 router.use('/admin', checkRole('admin'), admin);
 router.use('/arbiter', checkRole('arbiter'), arbiter);

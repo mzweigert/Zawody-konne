@@ -51,7 +51,7 @@ router.post('/addHorse', (req, res) => {
 });
 router.delete('/deleteHorse', (req, res) => {
 
-    console.log(req.body);
+
     if(!req.body.id){
 
         res.status(400).send('No content');
